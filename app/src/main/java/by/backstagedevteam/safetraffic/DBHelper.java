@@ -4,6 +4,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/**
+ * This class implements the base functions of working with the SQLite
+ *
+ *  * @author Dmitry Kostyuchenko
+ *  * @see by.backstagedevteam.safetraffic
+ *  * @since 2019
+ */
 public class DBHelper extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;

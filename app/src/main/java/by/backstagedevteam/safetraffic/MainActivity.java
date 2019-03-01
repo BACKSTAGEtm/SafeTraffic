@@ -115,9 +115,6 @@ public class MainActivity extends Activity implements UserLocationObjectListener
         userLocationLayer.setObjectListener(this);
         textCoorVal = (TextView) findViewById(R.id.textUserLocationVal);
 
-
-        //bd = new BDProcessing();
-        //bd = new BDProcessing(new Point(52.3681, 30.4027), new Point(52.3691, 30.4037));
         //Button btnSeeBD = findViewById(R.id.btnSeeBD);
         //btnSeeBD.setVisibility;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);

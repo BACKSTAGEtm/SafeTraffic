@@ -10,6 +10,13 @@ import com.yandex.mapkit.geometry.Point;
 
 import java.util.ArrayList;
 
+/**
+ * This class implements the functions of working with the database
+ *
+ *  * @author Dmitry Kostyuchenko
+ *  * @see by.backstagedevteam.safetraffic
+ *  * @since 2019
+ */
 public class DBWorker {
 
     DBHelper dbHelper;
