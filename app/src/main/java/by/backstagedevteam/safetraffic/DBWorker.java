@@ -12,16 +12,19 @@ import java.util.ArrayList;
 
 /**
  * This class implements the functions of working with the database
- *
- *  * @author Dmitry Kostyuchenko
- *  * @see by.backstagedevteam.safetraffic
- *  * @since 2019
+ * <p>
+ * * @author Dmitry Kostyuchenko
+ * * @see by.backstagedevteam.safetraffic
+ * * @since 2019
  */
 public class DBWorker {
-
     DBHelper dbHelper;
-    private static final double DEFAULT_RADIUS_MARKER = 0.0002;
 
+    /**
+     * This method return All markers in SQLite
+     *
+     * @return array markers
+     */
     public ArrayList<Markers> getMarkers() {
         ArrayList<Markers> markers = new ArrayList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
@@ -29,13 +32,13 @@ public class DBWorker {
         Log.d("DBWorker", "getMarkers");
         if (cursor.moveToFirst()) {
             do {
-            int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
-            int latitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LATITUDE);
-            int longtitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LONGITUDE);
+                int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
+                int latitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LATITUDE);
+                int longtitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LONGITUDE);
                 Log.d("SQLite", "id=" + cursor.getInt(idIndex) +
                         ", lat=" + cursor.getDouble(latitudeIndex) +
                         ", lon=" + cursor.getDouble(longtitudeIndex));
-                markers.add(new Markers(cursor.getDouble(latitudeIndex), cursor.getDouble(longtitudeIndex),MarkerType.Crosswalk));
+                markers.add(new Markers(cursor.getDouble(latitudeIndex), cursor.getDouble(longtitudeIndex), MarkerType.Crosswalk));
             } while (cursor.moveToNext());
         } else {
             Log.d("SQLite", "0 rows");
@@ -51,11 +54,19 @@ public class DBWorker {
         return markers;
     }
 
+    /**
+     * Temporarily!
+     * This method load data to Data Base
+     */
     public void initImportGPX() {
         ArrayList<Markers> markers = GPXParser.initAppParse();
         addMarkers(markers);
     }
 
+    /**
+     * This method adding array markers to Data Base
+     * @param markers
+     */
     public void addMarkers(ArrayList<Markers> markers) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         for (Markers item :
@@ -88,13 +99,20 @@ public class DBWorker {
         return null;
     }
 
+
     public void clear() {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         database.delete(DBHelper.TABLE_CONTACTS, null, null);
     }
 
-    DBWorker(Context context) {
+    public DBWorker(Context context) {
         dbHelper = new DBHelper(context);
+    }
+
+    public boolean checkDublicate() {
+        boolean isDublicate = false;
+        //TODO: check dublicate
+        return isDublicate;
     }
     /*
     public boolean close() {

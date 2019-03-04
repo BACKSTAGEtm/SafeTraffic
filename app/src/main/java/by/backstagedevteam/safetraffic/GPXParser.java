@@ -29,10 +29,15 @@ public class GPXParser {
      */
     private static final String gpxData = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
             "<gpx version=\"1.1\" creator=\"Yandex Map Constructor\" xmlns=\"http://www.topografix.com/GPX/1/1\"><metadata><name><![CDATA[Речица]]></name><desc/><time>2019-02-21T18:01:46.155Z</time></metadata>\n" +
-            "    <wpt lon=\"30.407151382660878\" lat=\"52.36707850789525\"><name><![CDATA[Гимназия. Нерегулируемый пешеходный переход.]]></name></wpt>\n" +
-            "    <wpt lon=\"30.40673368479986\" lat=\"52.36679569292205\"><name><![CDATA[Наумова. Нерегулируемый пешеходный переход]]></name></wpt>\n" +
-            "    <wpt lon=\"30.402752484485024\" lat=\"52.36825683931516\"><name><![CDATA[Я]]></name></wpt>\n" +
-            "</gpx>\n";
+            "   <wpt lon=\"30.407151382660878\" lat=\"52.36707850789525\"><name><![CDATA[Гимназия. Нерегулируемый пешеходный переход.]]></name></wpt>\n" +
+            "   <wpt lon=\"30.40673368479986\" lat=\"52.36679569292205\"><name><![CDATA[Наумова. Нерегулируемый пешеходный переход]]></name></wpt>\n" +
+            "   <wpt lon=\"30.402752484485024\" lat=\"52.36825683931516\"><name><![CDATA[Я]]></name></wpt>\n" +
+            "   <wpt lon=\"31.001705053000766\" lat=\"52.44251724316334\"><name><![CDATA[UnregulatedСrosswalk]]></name></wpt>\n" +
+            "   <wpt lon=\"31.003056886344183\" lat=\"52.44073391657299\"><name><![CDATA[Сrosswalk]]></name></wpt>\n" +
+            "   <wpt lon=\"30.99939835324514\" lat=\"52.4426024736627\"><name><![CDATA[UnregulatedСrosswalk]]></name></wpt>\n" +
+            "   <wpt lon=\"30.996531981477425\" lat=\"52.442986670443055\"><name><![CDATA[Сrosswalk]]></name></wpt>\n" +
+            "   <wpt lon=\"30.99427892590486\" lat=\"52.44580572179339\"><name><![CDATA[Сrosswalk]]></name></wpt>\n" +
+            " </gpx>\n";
 
     /**
      * This method parsing starting Data set
@@ -182,31 +187,6 @@ public class GPXParser {
         return xpp;
     }
 
-    public static XmlPullParser prepareXpp() throws XmlPullParserException {
-        /***String****/
-        //TODO: Old method. Delete.
-        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory = XmlPullParserFactory.newInstance();
-        //factory.setNamespaceAware(true);
-        XmlPullParser xpp = factory.newPullParser();
-        //xpp.setInput(new StringReader("<data><phone><company>Samsung</company></phone></data>"));
-        xpp.setInput(new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-                "<gpx version=\"1.1\" creator=\"Yandex Map Constructor\" xmlns=\"http://www.topografix.com/GPX/1/1\"><metadata><name><![CDATA[Речица]]></name><desc/><time>2019-02-21T18:01:46.155Z</time></metadata>\n" +
-                "    <wpt lon=\"30.407151382660878\" lat=\"52.36707850789525\"><name><![CDATA[Гимназия. Нерегулируемый пешеходный переход.]]></name></wpt>\n" +
-                "    <wpt lon=\"30.40673368479986\" lat=\"52.36679569292205\"><name><![CDATA[Наумова. Нерегулируемый пешеходный переход]]></name></wpt>\n" +
-                "</gpx>\n"));
-        /***********/
-        ////TODO Fix unknow files!
-        //File file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
-
-        //Log.d(TAG, "Data Directory: " + Coontext.fileList());
-        //File file = new File("/files" + "/" + fileName);
-        //FileInputStream fis = new FileInputStream(file);
-        //parser.setInput(new InputStreamReader(fis));
-
-        return xpp;
-    }
-
     //export Markers from file
     public static boolean exportFromFile(ArrayList<Markers> markers) {
 
@@ -214,6 +194,4 @@ public class GPXParser {
     }
 
     //export collection from file
-
-
 }

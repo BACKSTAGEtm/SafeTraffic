@@ -1,17 +1,7 @@
 package by.backstagedevteam.safetraffic;
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent; // подключаем класс Intent
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
@@ -21,35 +11,21 @@ import android.os.Bundle;
 
 import android.app.Activity;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.geometry.Circle;
-import com.yandex.mapkit.geometry.LinearRing;
 import com.yandex.mapkit.geometry.Point;
-import com.yandex.mapkit.geometry.Polygon;
-import com.yandex.mapkit.geometry.Polyline;
 import com.yandex.mapkit.layers.ObjectEvent;
 import com.yandex.mapkit.map.CameraPosition;
 
 import com.yandex.mapkit.map.CircleMapObject;
-import com.yandex.mapkit.map.InputListener;
-import com.yandex.mapkit.map.Map;
 
 import com.yandex.mapkit.map.CompositeIcon;
 import com.yandex.mapkit.map.IconStyle;
-import com.yandex.mapkit.map.PatternRepeatMode;
 import com.yandex.mapkit.map.PlacemarkMapObject;
-import com.yandex.mapkit.map.PolygonMapObject;
-import com.yandex.mapkit.map.PolylineMapObject;
 import com.yandex.mapkit.map.RotationType;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.mapkit.user_location.UserLocationLayer;
@@ -72,18 +48,19 @@ import com.yandex.runtime.network.NetworkError;
 import com.yandex.runtime.network.RemoteError;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends Activity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
 
-    private final Point ROUTE_START_LOCATION = new Point(59.959194, 30.407094);
-    private final Point ROUTE_END_LOCATION = new Point(55.733330, 37.587649);
+    //private final Point ROUTE_START_LOCATION = new Point(59.959194, 30.407094);
+    //private final Point ROUTE_END_LOCATION = new Point(55.733330, 37.587649);
+    private final Point ROUTE_START_LOCATION = new Point(52.44251724316334, 31.001705053000766);
+    private final Point ROUTE_END_LOCATION = new Point(52.44580572179339, 30.99427892590486);
+
     private final Point SCREEN_CENTER = new Point(
             (ROUTE_START_LOCATION.getLatitude() + ROUTE_END_LOCATION.getLatitude()) / 2,
             (ROUTE_START_LOCATION.getLongitude() + ROUTE_END_LOCATION.getLongitude()) / 2);
-
 
     private MapView mapView;
     private UserLocationLayer userLocationLayer;
@@ -94,7 +71,7 @@ public class MainActivity extends Activity implements UserLocationObjectListener
 
     TextView textCoorVal;
 
-    private DBWorker dbWorker;
+    private Engine engine;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,25 +91,20 @@ public class MainActivity extends Activity implements UserLocationObjectListener
         userLocationLayer.setHeadingEnabled(true);
         userLocationLayer.setObjectListener(this);
         textCoorVal = (TextView) findViewById(R.id.textUserLocationVal);
-
-        //Button btnSeeBD = findViewById(R.id.btnSeeBD);
-        //btnSeeBD.setVisibility;
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
-        dbWorker = new DBWorker(this);
-        dbWorker.clear();
-        dbWorker.initImportGPX();
+        engine = new Engine(this);
         //TEMP
         mapObjects = mapView.getMap().getMapObjects().addCollection();
-        createMapObjects(dbWorker.getMarkers());
+        createMapObjects(engine.getDB(), Color.RED);
     }
 
-    private void createMapObjects(ArrayList<Markers> markers) {
+    private void createMapObjects(ArrayList<Markers> markers, int colorfill) {
         for (Markers item :
                 markers) {
             //TODO Change Icon!
             CircleMapObject circle = mapObjects.addCircle(
-                    new Circle(item.getPosition(), (float)Markers.DEFAULT_AREA_RADIUS), Color.GREEN, 2, Color.RED);
+                    new Circle(item.getPosition(), (float) Markers.DEFAULT_AREA_RADIUS), Color.GREEN, 2, colorfill);
             circle.setZIndex(100.0f);
 
             PlacemarkMapObject mark = mapObjects.addPlacemark(item.getPosition());
@@ -184,7 +156,6 @@ public class MainActivity extends Activity implements UserLocationObjectListener
                         .setZIndex(1f)
                         .setScale(0.5f)
         );
-
         userLocationView.getAccuracyCircle().setFillColor(Color.BLUE);
     }
 
@@ -197,11 +168,13 @@ public class MainActivity extends Activity implements UserLocationObjectListener
     }
 
     public void onDrivingRoutes(List<DrivingRoute> routes) {
+        engine.start(routes);
         for (DrivingRoute route : routes) {
             mapObjects.addPolyline(route.getGeometry());
         }
         /****Markers***/
         //mapObjects.addCircle()
+        createMapObjects(engine.getQueue(), Color.BLUE);
     }
 
     @Override
@@ -274,7 +247,7 @@ public class MainActivity extends Activity implements UserLocationObjectListener
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            changeLocation(location);
+            engine.handler(MainActivity.this, location);
         }
 
         @Override
@@ -285,7 +258,19 @@ public class MainActivity extends Activity implements UserLocationObjectListener
         @Override
         public void onProviderEnabled(String provider) {
             changeProvider(true);
-            changeLocation(locationManager.getLastKnownLocation(provider));
+            if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
+            engine.handler(MainActivity.this, locationManager.getLastKnownLocation(provider));
         }
 
         @Override
@@ -308,46 +293,5 @@ public class MainActivity extends Activity implements UserLocationObjectListener
 
     private void changeStatus(String status) {
         Toast.makeText(this, "Status" + status, Toast.LENGTH_SHORT).show();
-    }
-
-    private void changeLocation(Location location) {
-        String str;
-        if (location != null) {
-            str = String.format(
-                    "Coordinates: lat = %1$.4f, lon = %2$.4f, time = %3$tF %3$tT",
-                    location.getLatitude(), location.getLongitude(), new Date(
-                            location.getTime()));
-
-        } else {
-            str = "Location unknown!";
-        }
-        textCoorVal.setText(str);
-        Point pLoc = new Point(location.getLatitude(), location.getLongitude());
-        Markers request = dbWorker.checkIntersection(pLoc);
-        if (request != null) {
-            String text = "Distance: " +
-                    request.getDistance(request.getPosition(), new Point (location.getLatitude(), location.getLongitude()));
-            Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void seeBD(View view) {
-        //Intent intent = new Intent(this, seeBD().class);
-        // Получаем текстовое поле в текущей Activity
-        //EditText editText = (EditText) findViewById(R.id.edit_message);
-        // Получае текст данного текстового поля
-        //String message = editText.getText().toString();
-        // Добавляем с помощью свойства putExtra объект - первый параметр - ключ,
-        // второй параметр - значение этого объекта
-        //intent.putExtra(EXTRA_MESSAGE, message);
-        //intent.pu
-        // запуск activity
-        //startActivity(intent);
-
-        //setContentView(R.layout.bd_table);
-    }
-
-    private void closeSeeBD(View view) {
-        setContentView(R.layout.activity_main);
     }
 }

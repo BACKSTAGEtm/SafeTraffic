@@ -37,6 +37,12 @@ public class Markers {
         this.type = type;
     }
 
+    public Markers(Point point, MarkerType type) {
+        this.latitude = point.getLatitude();
+        this.longitude = point.getLongitude();
+        this.type = type;
+    }
+
     public double getLatitude() {
         return latitude;
     }
@@ -98,7 +104,7 @@ public class Markers {
      * @param pos2 position of the second object
      * @return distance
      */
-    public double getDistance(Point pos1, Point pos2) {
+    public static double getDistance(Point pos1, Point pos2) {
         double R = 6378.137; // Radius of earth in KM
         double lat1 = pos1.getLatitude();
         double lon1 = pos1.getLongitude();
@@ -121,6 +127,9 @@ public class Markers {
         return type;
     }
 
+    /**
+     * This method print marker from log
+     */
     public void printDBG() {
         final String TAG = "Markers print";
         Log.d(TAG, "lat=" + getLatitude() + ", lon=" + getLongitude() + ", type=" + getType());
