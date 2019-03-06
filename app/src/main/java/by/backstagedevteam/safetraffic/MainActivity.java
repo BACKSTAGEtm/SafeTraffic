@@ -61,6 +61,7 @@ import com.yandex.runtime.network.RemoteError;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
         DirectionsFactory.initialize(this);
-        if (Build.VERSION.SDK_INT >= 23){
+        if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
@@ -113,10 +114,9 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-               this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
-
 
 
         mapView = (MapView) findViewById(R.id.mapView);
@@ -139,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
     /**
      * This method add new visible markers to map
+     *
      * @param markers
      * @param colorfill new markers
      */
@@ -231,18 +232,18 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
-    private void submitRequest() {
+    private void submitRequest(Point start, Point end) {
         DrivingOptions options = new DrivingOptions();
         ArrayList<RequestPoint> requestPoints = new ArrayList<>();
-        Point startLocation = new Point(deviceLocation.getLatitude(), deviceLocation.getLongitude());
+        //Point startLocation = new Point(start.getLatitude(), deviceLocation.getLongitude());
         requestPoints.add(new RequestPoint(
 //                ROUTE_START_LOCATION,
-                startLocation,
+                start,
                 new ArrayList<Point>(),
                 new ArrayList<DrivingArrivalPoint>(),
                 RequestPointType.WAYPOINT));
         requestPoints.add(new RequestPoint(
-                ROUTE_END_LOCATION,
+                end,
                 new ArrayList<Point>(),
                 new ArrayList<DrivingArrivalPoint>(),
                 RequestPointType.WAYPOINT));
@@ -250,30 +251,37 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     }
 
     public void CreateRouting(View view) {
-        //Point startRout = userLocationLayer.
+        startRouting(new Point(deviceLocation.getLatitude(), deviceLocation.getLongitude()), ROUTE_END_LOCATION);
+    }
 
-//        Point centerScreen = new Point(
-//                (ROUTE_START_LOCATION.getLatitude() + ROUTE_END_LOCATION.getLatitude()) / 2,
-//                (ROUTE_START_LOCATION.getLongitude() + ROUTE_END_LOCATION.getLongitude()) / 2);
-        //TODO: check valid location
+    /**
+     * This method construct routing and play
+     *
+     * @param start point routing
+     * @param end   point routing
+     * @return {@true} if route create and {@false} if create failed
+     */
+    public boolean startRouting(Point start, Point end) {
         try {
             if (deviceLocation != null) {
                 Point centerScreen = new Point(
-                        (deviceLocation.getLatitude() + ROUTE_END_LOCATION.getLatitude()) / 2,
-                        (deviceLocation.getLongitude() + ROUTE_END_LOCATION.getLongitude()) / 2);
+                        (start.getLatitude() + end.getLatitude()) / 2,
+                        (start.getLongitude() + end.getLongitude()) / 2);
                 mapView.getMap().move(new CameraPosition(
                         //        SCREEN_CENTER, 2, 0, 0));
                         centerScreen, 8, 0, 0));
                 drivingRouter = DirectionsFactory.getInstance().createDrivingRouter();
                 mapObjects = mapView.getMap().getMapObjects().addCollection();
-                submitRequest();
+                submitRequest(start, end);
+                return true;
             } else {
                 Toast.makeText(this, "Current location unknown!", Toast.LENGTH_SHORT).show();
+                return false;
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.d("routing", e.getMessage());
+            return false;
         }
-
     }
 
     /**
@@ -308,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            Log.d("LocChange",location.getLatitude()+", " + location.getLongitude());
+            Log.d("LocChange", location.getLatitude() + ", " + location.getLongitude());
             deviceLocation = location;
             if (location != null) {
                 engine.handler(MainActivity.this, location);
@@ -336,7 +344,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 return;
             }
             Location lastLocation = locationManager.getLastKnownLocation(provider);
-            Log.d("LocLast",lastLocation.getLatitude()+", " + lastLocation.getLongitude());
+            Log.d("LocLast", lastLocation.getLatitude() + ", " + lastLocation.getLongitude());
             if (lastLocation != null) {
                 deviceLocation = lastLocation;
                 engine.handler(MainActivity.this, lastLocation);
@@ -392,9 +400,9 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         int id = item.getItemId();
 
 
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.nav_manage:
-                Intent intent = new Intent (MainActivity.this, Settings.class);
+                Intent intent = new Intent(MainActivity.this, Settings.class);
                 startActivities(new Intent[]{intent});
         }
 
@@ -411,15 +419,15 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         if (id == R.id.nav_manage) {
 
 
-        } else if (id == R.id.nav_rez)    {
+        } else if (id == R.id.nav_rez) {
 
-        } else if (id == R.id.nav_info)  {
+        } else if (id == R.id.nav_info) {
 
-        } else if (id == R.id.nav_erorr)   {
+        } else if (id == R.id.nav_erorr) {
 
-        } else if (id == R.id.nav_share)  {
+        } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send)   {
+        } else if (id == R.id.nav_send) {
 
         }
 
@@ -427,9 +435,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-
 
 
 }
