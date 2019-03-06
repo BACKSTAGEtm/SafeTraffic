@@ -9,6 +9,7 @@ import android.graphics.PointF;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 
 import android.app.Activity;
@@ -91,8 +92,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     private LocationManager locationManager;
     private Location deviceLocation;
 
-    TextView textCoorVal;
-
     private Engine engine;
 
     @Override
@@ -101,13 +100,16 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
         DirectionsFactory.initialize(this);
-        //super.onCreate(savedInstanceState);
-        //setContentView(R.layout.geomap);
-        setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= 23){
+            setContentView(R.layout.activity_main);
+            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            navigationView.setNavigationItemSelectedListener(this);
+        } else {
+            setContentView(R.layout.activity_main_v21);
+        }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -115,8 +117,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+
 
         mapView = (MapView) findViewById(R.id.mapView);
         /*mapView.getMap().move(

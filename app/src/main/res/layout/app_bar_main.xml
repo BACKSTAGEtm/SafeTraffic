@@ -28,8 +28,7 @@
     <com.yandex.mapkit.mapview.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/Footer" />
+        android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/button"
@@ -37,7 +36,8 @@
         android:layout_height="wrap_content"
         android:text="Начать"
         app:layout_anchor="@+id/include"
-        app:layout_anchorGravity="bottom|center" />
+        app:layout_anchorGravity="bottom|center"
+        android:onClick="CreateRouting"/>
 
 
 </android.support.design.widget.CoordinatorLayout>
