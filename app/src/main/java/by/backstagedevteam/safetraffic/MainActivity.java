@@ -101,8 +101,8 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
         DirectionsFactory.initialize(this);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.geomap);
+        //super.onCreate(savedInstanceState);
+        //setContentView(R.layout.geomap);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
