@@ -29,19 +29,19 @@ public class DBWorker {
         ArrayList<Markers> markers = new ArrayList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         Cursor cursor = database.query(DBHelper.TABLE_CONTACTS, null, null, null, null, null, null);
-        Log.d("DBWorker", "getMarkers");
+        //Log.d("DBWorker", "getMarkers");
         if (cursor.moveToFirst()) {
             do {
                 int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
                 int latitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LATITUDE);
                 int longtitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LONGITUDE);
-                Log.d("SQLite", "id=" + cursor.getInt(idIndex) +
-                        ", lat=" + cursor.getDouble(latitudeIndex) +
-                        ", lon=" + cursor.getDouble(longtitudeIndex));
+//                Log.d("SQLite", "id=" + cursor.getInt(idIndex) +
+//                        ", lat=" + cursor.getDouble(latitudeIndex) +
+//                        ", lon=" + cursor.getDouble(longtitudeIndex));
                 markers.add(new Markers(cursor.getDouble(latitudeIndex), cursor.getDouble(longtitudeIndex), MarkerType.Crosswalk));
             } while (cursor.moveToNext());
         } else {
-            Log.d("SQLite", "0 rows");
+            //Log.d("SQLite", "0 rows");
         }
         cursor.close();
         database.close();

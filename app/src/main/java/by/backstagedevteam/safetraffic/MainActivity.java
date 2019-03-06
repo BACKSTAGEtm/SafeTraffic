@@ -1,6 +1,7 @@
 package by.backstagedevteam.safetraffic;
 
 import android.Manifest;
+import android.app.Notification;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 
 import android.app.Activity;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -68,6 +70,7 @@ public class MainActivity extends Activity implements UserLocationObjectListener
     private DrivingRouter drivingRouter;
     private DrivingSession drivingSession;
     private LocationManager locationManager;
+    private Location deviceLocation;
 
     TextView textCoorVal;
 
@@ -94,11 +97,17 @@ public class MainActivity extends Activity implements UserLocationObjectListener
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         engine = new Engine(this);
+
+        //mapObjects = mapView.getMap().getMapObjects().addCollection();
+        //createMapObjects(engine.getDB(), Color.RED);
         //TEMP
-        mapObjects = mapView.getMap().getMapObjects().addCollection();
-        createMapObjects(engine.getDB(), Color.RED);
     }
 
+    /**
+     * This method add new visible markers to map
+     * @param markers
+     * @param colorfill new markers
+     */
     private void createMapObjects(ArrayList<Markers> markers, int colorfill) {
         for (Markers item :
                 markers) {
@@ -109,7 +118,7 @@ public class MainActivity extends Activity implements UserLocationObjectListener
 
             PlacemarkMapObject mark = mapObjects.addPlacemark(item.getPosition());
             mark.setOpacity(0.5f);
-            mark.setIcon(ImageProvider.fromResource(this, R.drawable.mark));
+            mark.setIcon(ImageProvider.fromResource(this, R.drawable.pin));
             mark.setDraggable(true);
         }
     }
@@ -173,7 +182,6 @@ public class MainActivity extends Activity implements UserLocationObjectListener
             mapObjects.addPolyline(route.getGeometry());
         }
         /****Markers***/
-        //mapObjects.addCircle()
         createMapObjects(engine.getQueue(), Color.BLUE);
     }
 
@@ -192,8 +200,10 @@ public class MainActivity extends Activity implements UserLocationObjectListener
     private void submitRequest() {
         DrivingOptions options = new DrivingOptions();
         ArrayList<RequestPoint> requestPoints = new ArrayList<>();
+        Point startLocation = new Point(deviceLocation.getLatitude(), deviceLocation.getLongitude());
         requestPoints.add(new RequestPoint(
-                ROUTE_START_LOCATION,
+//                ROUTE_START_LOCATION,
+                startLocation,
                 new ArrayList<Point>(),
                 new ArrayList<DrivingArrivalPoint>(),
                 RequestPointType.WAYPOINT));
@@ -207,17 +217,34 @@ public class MainActivity extends Activity implements UserLocationObjectListener
 
     public void CreateRouting(View view) {
         //Point startRout = userLocationLayer.
-        mapView.getMap().move(new CameraPosition(
-                SCREEN_CENTER, 5, 0, 0));
-        drivingRouter = DirectionsFactory.getInstance().createDrivingRouter();
-        mapObjects = mapView.getMap().getMapObjects().addCollection();
-        submitRequest();
+
+//        Point centerScreen = new Point(
+//                (ROUTE_START_LOCATION.getLatitude() + ROUTE_END_LOCATION.getLatitude()) / 2,
+//                (ROUTE_START_LOCATION.getLongitude() + ROUTE_END_LOCATION.getLongitude()) / 2);
+        //TODO: check valid location
+        try {
+            if (deviceLocation != null) {
+                Point centerScreen = new Point(
+                        (deviceLocation.getLatitude() + ROUTE_END_LOCATION.getLatitude()) / 2,
+                        (deviceLocation.getLongitude() + ROUTE_END_LOCATION.getLongitude()) / 2);
+                mapView.getMap().move(new CameraPosition(
+                        //        SCREEN_CENTER, 2, 0, 0));
+                        centerScreen, 8, 0, 0));
+                drivingRouter = DirectionsFactory.getInstance().createDrivingRouter();
+                mapObjects = mapView.getMap().getMapObjects().addCollection();
+                submitRequest();
+            } else {
+                Toast.makeText(this, "Current location unknown!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e){
+            Log.d("routing", e.getMessage());
+        }
+
     }
 
     /**
      * Location zone
      */
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -247,7 +274,11 @@ public class MainActivity extends Activity implements UserLocationObjectListener
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            engine.handler(MainActivity.this, location);
+            Log.d("LocChange",location.getLatitude()+", " + location.getLongitude());
+            deviceLocation = location;
+            if (location != null) {
+                engine.handler(MainActivity.this, location);
+            }
         }
 
         @Override
@@ -270,15 +301,21 @@ public class MainActivity extends Activity implements UserLocationObjectListener
                 // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-            engine.handler(MainActivity.this, locationManager.getLastKnownLocation(provider));
+            Location lastLocation = locationManager.getLastKnownLocation(provider);
+            Log.d("LocLast",lastLocation.getLatitude()+", " + lastLocation.getLongitude());
+            if (lastLocation != null) {
+                deviceLocation = lastLocation;
+                engine.handler(MainActivity.this, lastLocation);
+            }
+
         }
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
             if (provider.equals(LocationManager.GPS_PROVIDER)) {
-                changeStatus(String.valueOf(status));
+                changeStatus("GPS PROVIDER");
             } else if (provider.equals(LocationManager.NETWORK_PROVIDER)) {
-                changeStatus(String.valueOf(status));
+                changeStatus("NETWORK PROVIDER");
             }
         }
     };

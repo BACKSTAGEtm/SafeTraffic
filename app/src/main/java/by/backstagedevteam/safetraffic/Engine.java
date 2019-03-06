@@ -2,7 +2,10 @@ package by.backstagedevteam.safetraffic;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Handler;
+import android.os.Parcel;
 import android.util.Log;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.yandex.mapkit.directions.driving.DrivingRoute;
@@ -25,13 +28,16 @@ public class Engine {
     public static final double DEFAULT_AREA_ROUTE = 5;
     public MarkersQueue queue;
     private boolean isRun = false;
-
     private DBWorker dbWorker;
+
+    private final Handler handler = new Handler();
 
     public Engine(Context context) {
         dbWorker = new DBWorker(context);
         dbWorker.clear();
         dbWorker.initImportGPX();
+        //temp
+        queue = new MarkersQueue();
     }
 
     /**
@@ -42,6 +48,23 @@ public class Engine {
     public void start(List<DrivingRoute> routes) {
         queue = new MarkersQueue(getMarkerForDriving(routes));
         isRun = true;
+        /**
+         * Start background task for checked current pointer
+         */
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() { //Check pointer code from valid notification
+                //queue.checkPointer();
+            }
+        }, 5000);
+    }
+
+    /**
+     * This method closed way and clear memory
+     */
+    public void closeWay() {
+        isRun = false;
+        queue = new MarkersQueue();
     }
 
     /**
@@ -101,29 +124,26 @@ public class Engine {
      * @param location user
      */
     public void handler(Context context, Location location) {
-        if (location.getLatitude() != 0 && location.getLongitude() != 0) {
-            changeLocation(context, location);
+        try {
+            if (location.getLatitude() != 0 && location.getLongitude() != 0) {
+                queue.updateLocation(new Point(location.getLatitude(), location.getLongitude()));
+//                 queue.updateLocation(location);
+                changeLocation(context, location);
+            }
+        } catch (Exception e) {
+            Log.d("handler", e.getMessage());
         }
+
     }
 
     /**
+     * Ы
      * This method handles location changes and triggers notifications
      *
      * @param context
      * @param location user
      */
     private void changeLocation(Context context, Location location) {
-        String str;
-        if (location != null) {
-            str = String.format(
-                    "Coordinates: lat = %1$.4f, lon = %2$.4f, time = %3$tF %3$tT",
-                    location.getLatitude(), location.getLongitude(), new Date(
-                            location.getTime()));
-
-        } else {
-            str = "Location unknown!";
-        }
-        Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
         if (isRun) {
             Point pLoc = new Point(location.getLatitude(), location.getLongitude());
             if (queue.getMarker().checkIntersection(pLoc)) {
@@ -131,7 +151,15 @@ public class Engine {
                         Markers.getDistance(queue.getMarker().getPosition(), new Point(location.getLatitude(), location.getLongitude())) +
                         " Type ";
                 Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+                //TODO: fix bug overflow
+                //TODO: pointer>size ??
                 queue.next();
+                if (queue.getMarker().getType() == MarkerType.Crosswalk) {
+                    text += "Crosswalk";
+                } else if (queue.getMarker().getType() == MarkerType.UnregulatedСrosswalk) {
+                    text += "Unregulated Crosswalk";
+                }
+                Notification.sendNotification(context, text);
             }
         }
     }

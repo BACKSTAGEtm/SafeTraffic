@@ -118,9 +118,6 @@ public class Markers {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double d = R * c;
         return d * 1000; //meter
-        //double dLat = pos2.getLatitude() - pos1.getLatitude();
-        //double dLon = pos2.getLongitude() - pos1.getLongitude();
-        //return Math.sqrt(dLon * dLon + dLat * dLat);
     }
 
     public MarkerType getType() {

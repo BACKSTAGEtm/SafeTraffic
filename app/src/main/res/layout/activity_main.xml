@@ -12,15 +12,18 @@
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/Footer"
         />
+
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:onClick="CreateRouting"
         android:text="Start!"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:onClick="CreateRouting"/>
+        app:layout_constraintVertical_bias="0.92" />
 
     <LinearLayout
         android:id="@+id/Footer"
@@ -48,17 +51,6 @@
             android:textAlignment="center" />
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnSeeBD"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="See BD"
-        android:visibility="visible"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:layout_margin="7dp"
-        android:onClick="seeBD"/>
 
 
 </android.support.constraint.ConstraintLayout>
