@@ -118,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        setContentView(R.layout.activity_main);
         mapView = (MapView) findViewById(R.id.mapView);
         /*mapView.getMap().move(
                 new CameraPosition(new Point(55.751574,37.573856), 11.0f, 0.0f, 0.0f),
