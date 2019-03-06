@@ -25,6 +25,12 @@
         android:id="@+id/include"
         layout="@layout/content_main" />
 
+    <com.yandex.mapkit.mapview.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/Footer" />
+
     <Button
         android:id="@+id/button"
         android:layout_width="220dp"

@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         userLocationLayer.setEnabled(true);
         userLocationLayer.setHeadingEnabled(true);
         userLocationLayer.setObjectListener(this);
-        textCoorVal = (TextView) findViewById(R.id.textUserLocationVal);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         engine = new Engine(this);
