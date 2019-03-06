@@ -1,6 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">SafeTraffic</string>
-    <string name="unknown_error_message">Unknown Error!</string>
-    <string name="remote_error_message">Remote Error!</string>
-    <string name="network_error_message">Network Error!</string>
+    <string name="hint_" />
+    <string name="navigation_drawer_open" />
+    <string name="navigation_drawer_close" />
+    <string name="unknown_error_message" />
+    <string name="remote_error_message" />
+    <string name="network_error_message" />
 </resources>

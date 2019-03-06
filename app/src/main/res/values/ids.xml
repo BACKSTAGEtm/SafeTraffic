@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="search" type="id" />
+    <item name="drawer_layout" type="id" />
+    <item name="nav_view" type="id" />
+</resources>

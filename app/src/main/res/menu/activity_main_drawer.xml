@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+         
+         <item
+            android:id="@+id/nav_manage"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Настройки" />
+        <item
+            android:id="@+id/nav_rez"
+            android:icon="@android:drawable/ic_dialog_dialer"
+            android:title="Выбор режима" />
+        <item
+            android:id="@+id/nav_bd"
+            android:icon="@android:drawable/ic_menu_mapmode"
+            android:title="Дополнить карту" />
+
+    </group>
+
+
+    <item android:title="Общение">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="Поделиться " />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_menu_send"
+                android:title="Отправить сообщение" />
+        </menu>
+    </item>
+
+     <item android:title="Помощь">
+        <menu>
+            <item
+                android:id="@+id/nav_info"
+                android:icon="@android:drawable/ic_dialog_info"
+                android:title="Подсказки" />
+            <item
+                android:id="@+id/nav_erorr"
+                android:icon="@android:drawable/ic_dialog_email"
+                android:title="Отправить отчёт об ошибке" />
+        </menu>
+     </item>
+
+</menu>
