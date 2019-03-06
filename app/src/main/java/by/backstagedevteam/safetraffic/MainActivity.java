@@ -12,6 +12,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import android.app.Activity;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -60,7 +61,7 @@ import com.yandex.runtime.network.RemoteError;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener,NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
 
     //private final Point ROUTE_START_LOCATION = new Point(59.959194, 30.407094);

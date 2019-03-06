@@ -19,9 +19,9 @@ import java.util.List;
 /**
  * This class implements the functions of working main engine
  * <p>
- * * @author Dmitry Kostyuchenko
- * * @see by.backstagedevteam.safetraffic
- * * @since 2019
+ * @author Dmitry Kostyuchenko
+ * @see by.backstagedevteam.safetraffic
+ * @since 2019
  */
 public class Engine {
     public static final double DEFAULT_AREA_RADIUS = 5;
