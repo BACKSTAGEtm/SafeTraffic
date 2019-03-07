@@ -39,6 +39,7 @@ import com.yandex.mapkit.map.CompositeIcon;
 import com.yandex.mapkit.map.IconStyle;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.map.RotationType;
+import com.yandex.mapkit.map.VisibleRegion;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.mapkit.user_location.UserLocationObjectListener;
@@ -72,6 +73,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import LatLngBounds.Builder;
 
 public class MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
@@ -434,6 +437,16 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public boolean isVisibleArea(final Markers markers)
+    {
+        final Builder bld = new Builder();
+        final VisibleRegion visibleRegion = mapKit.getProjection().getVisibleRegion();
+        bld.include(visibleRegion.getBottomLeft())
+                .include(visibleRegion.getBottomRight())
+                .include(visibleRegion.getTopLeft())
+                .include(visibleRegion.getTopRight());
+        return bld.build().contains(markers.getPosition());
     }
 
 
