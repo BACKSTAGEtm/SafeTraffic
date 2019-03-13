@@ -1,9 +1,9 @@
 package by.backstagedevteam.safetraffic;
 
 import android.Manifest;
-import android.app.Notification;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
@@ -11,8 +11,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
-
-import android.app.Activity;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
@@ -24,19 +22,25 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yandex.mapkit.MapKitFactory;
+import com.yandex.mapkit.directions.DirectionsFactory;
+import com.yandex.mapkit.directions.driving.DrivingArrivalPoint;
+import com.yandex.mapkit.directions.driving.DrivingOptions;
+import com.yandex.mapkit.directions.driving.DrivingRoute;
+import com.yandex.mapkit.directions.driving.DrivingRouter;
+import com.yandex.mapkit.directions.driving.DrivingSession;
+import com.yandex.mapkit.directions.driving.RequestPoint;
+import com.yandex.mapkit.directions.driving.RequestPointType;
 import com.yandex.mapkit.geometry.Circle;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.layers.ObjectEvent;
 import com.yandex.mapkit.map.CameraPosition;
-
 import com.yandex.mapkit.map.CircleMapObject;
-
 import com.yandex.mapkit.map.CompositeIcon;
 import com.yandex.mapkit.map.IconStyle;
+import com.yandex.mapkit.map.MapObjectCollection;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.map.RotationType;
 import com.yandex.mapkit.map.VisibleRegion;
@@ -44,37 +48,15 @@ import com.yandex.mapkit.mapview.MapView;
 import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.mapkit.user_location.UserLocationObjectListener;
 import com.yandex.mapkit.user_location.UserLocationView;
-import com.yandex.runtime.image.ImageProvider;
-
-import com.yandex.mapkit.directions.DirectionsFactory;
-import com.yandex.mapkit.directions.driving.DrivingArrivalPoint;
-import com.yandex.mapkit.directions.driving.DrivingRouter;
-import com.yandex.mapkit.directions.driving.DrivingOptions;
-import com.yandex.mapkit.directions.driving.DrivingSession;
-import com.yandex.mapkit.directions.driving.DrivingRoute;
-import com.yandex.mapkit.directions.driving.RequestPoint;
-import com.yandex.mapkit.directions.driving.RequestPointType;
-import com.yandex.mapkit.map.MapObjectCollection;
-
 import com.yandex.runtime.Error;
+import com.yandex.runtime.image.ImageProvider;
 import com.yandex.runtime.network.NetworkError;
 import com.yandex.runtime.network.RemoteError;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import LatLngBounds.Builder;
+//import LatLngBounds.Builder;
 
 public class MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
@@ -112,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             setContentView(R.layout.activity_main_v21);
         }
 
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -135,8 +118,8 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
         engine = new Engine(this);
 
-        //mapObjects = mapView.getMap().getMapObjects().addCollection();
-        //createMapObjects(engine.getDB(), Color.RED);
+        mapObjects = mapView.getMap().getMapObjects().addCollection();
+        createMapObjects(engine.getDB(), Color.RED);
         //TEMP
     }
 
@@ -254,7 +237,11 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     }
 
     public void CreateRouting(View view) {
-        startRouting(new Point(deviceLocation.getLatitude(), deviceLocation.getLongitude()), ROUTE_END_LOCATION);
+        try {
+            startRouting(new Point(deviceLocation.getLatitude(), deviceLocation.getLongitude()), ROUTE_END_LOCATION);
+        } catch (Exception e){
+            Log.d("CreateRouting", e.getMessage());
+        }
     }
 
     /**
@@ -319,11 +306,14 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
+            engine.updateCurrentLocation(location);
             Log.d("LocChange", location.getLatitude() + ", " + location.getLongitude());
             deviceLocation = location;
+            //Engine
             if (location != null) {
                 engine.handler(MainActivity.this, location);
             }
+
         }
 
         @Override
@@ -352,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 deviceLocation = lastLocation;
                 engine.handler(MainActivity.this, lastLocation);
             }
-
+            engine.updateCurrentLocation(locationManager.getLastKnownLocation(provider));
         }
 
         @Override
@@ -438,6 +428,7 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+    /*
     public boolean isVisibleArea(final Markers markers)
     {
         final Builder bld = new Builder();
@@ -448,6 +439,6 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 .include(visibleRegion.getTopRight());
         return bld.build().contains(markers.getPosition());
     }
-
+    */
 
 }

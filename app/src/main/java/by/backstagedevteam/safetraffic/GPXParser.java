@@ -1,5 +1,8 @@
 package by.backstagedevteam.safetraffic;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.res.Resources;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -11,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -44,10 +48,10 @@ public class GPXParser {
      *
      * @return array Markers
      */
-    public static ArrayList<Markers> initAppParse() {
+    public static ArrayList<Markers> initAppParse(Context context) {
         ArrayList<Markers> markers = new ArrayList<>();
         try {
-            XmlPullParser xpp = prepareXppFromStr(gpxData);
+            XmlPullParser xpp = prepareXppFromRaw(context);
             markers = parser(xpp);
         } catch (Exception e) {
             Log.d("GPXParser", "Error init parse");
@@ -184,6 +188,16 @@ public class GPXParser {
         File file = new File(filePath);
         FileInputStream fis = new FileInputStream(file);
         xpp.setInput(new InputStreamReader(fis));
+        return xpp;
+    }
+
+    public static XmlPullParser prepareXppFromRaw(Context context) throws XmlPullParserException, FileNotFoundException {
+        XmlPullParserFactory factory;
+        factory = XmlPullParserFactory.newInstance();
+        XmlPullParser xpp = factory.newPullParser();
+        Resources r = context.getResources();
+        InputStream is = r.openRawResource(R.raw.db001);
+        xpp.setInput(new InputStreamReader(is));
         return xpp;
     }
 

@@ -15,6 +15,12 @@ public class DBHelper extends SQLiteOpenHelper {
 
     public static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "markersDB";
+    public static String[] TABLE_REGION;
+
+    static {
+        TABLE_REGION = new String[]{"Gomel", "Rechitsa"};
+    }
+
     public static final String TABLE_CONTACTS = "markers";
 
     public static final String KEY_ID = "_id";

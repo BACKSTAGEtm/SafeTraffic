@@ -2,16 +2,19 @@ package by.backstagedevteam.safetraffic;
 
 import android.content.Context;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.os.Parcel;
 import android.util.Log;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.yandex.mapkit.LocalizedValue;
 import com.yandex.mapkit.directions.driving.DrivingRoute;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.geometry.Polyline;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +22,7 @@ import java.util.List;
 /**
  * This class implements the functions of working main engine
  * <p>
+ *
  * @author Dmitry Kostyuchenko
  * @see by.backstagedevteam.safetraffic
  * @since 2019
@@ -26,18 +30,44 @@ import java.util.List;
 public class Engine {
     public static final double DEFAULT_AREA_RADIUS = 5;
     public static final double DEFAULT_AREA_ROUTE = 5;
+    public static final double BUFFER_AREA = 1;
     public MarkersQueue queue;
     private boolean isRun = false;
     private DBWorker dbWorker;
+    private ArrayList<Markers> markersBuffer;
+
+    private Location currentLocation;
+
+    public void updateCurrentLocation(Location location) {
+        if (location.getLatitude() != 0 && location.getLongitude() != 0) {
+            currentLocation = location;
+        }
+    }
+
+    /**
+     * This method return current location is location valid or return {@code null}
+     *
+     * @return {@code Location} is location valid
+     * {@code null} is bad location
+     */
+    public Location getCurrentLocation() {
+        if (currentLocation.getLatitude() != 0 && currentLocation.getLongitude() != 0) {
+            return currentLocation;
+        } else {
+            return null;
+        }
+    }
 
     private final Handler handler = new Handler();
 
     public Engine(Context context) {
         dbWorker = new DBWorker(context);
         dbWorker.clear();
-        dbWorker.initImportGPX();
+        //dbWorker.initImportGPX(context.getResources());
+        dbWorker.initImportGPX(context);
         //temp
         queue = new MarkersQueue();
+        currentLocation = new Location(LocationManager.GPS_PROVIDER);
     }
 
     /**
@@ -54,9 +84,21 @@ public class Engine {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() { //Check pointer code from valid notification
-                //queue.checkPointer();
+                updateBuffer();
             }
         }, 5000);
+    }
+
+    public void updateBuffer() {
+        double pLat = currentLocation.getLatitude();
+        double pLon = currentLocation.getLongitude();
+        Log.d("CurrentLocation", "Lat="+pLat +", Lon=" + pLon);
+        Point p1 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
+        Point p2 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
+        Log.d("BufferArea", String.valueOf(Markers.getDistance(p1,p2)) + "m");
+//        markersBuffer = dbWorker.getMarkersOfArea(p1, p2);
+        markersBuffer = dbWorker.getMarkers();
+        Log.d("BufferSize", String.valueOf(markersBuffer.size()));
     }
 
     /**
@@ -65,6 +107,7 @@ public class Engine {
     public void closeWay() {
         isRun = false;
         queue = new MarkersQueue();
+        //handler.
     }
 
     /**

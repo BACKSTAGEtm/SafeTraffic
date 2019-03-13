@@ -75,7 +75,7 @@ public class Markers {
      * @param pos2 position of the second object
      * @return {@code true} if objects intersect
      */
-    public boolean checkIntersection(Point pos1, Point pos2) {
+    public static boolean checkIntersection(Point pos1, Point pos2) {
         if (getDistance(pos1, pos2) < DEFAULT_AREA_RADIUS) {
             return true;
         }

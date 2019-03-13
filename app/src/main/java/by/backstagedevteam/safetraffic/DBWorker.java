@@ -1,5 +1,6 @@
 package by.backstagedevteam.safetraffic;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -48,9 +49,41 @@ public class DBWorker {
         return markers;
     }
 
-    public ArrayList<Markers> getMarkersOfArea() {
+    /**
+     * This method return markers of area. p1 - left-top, p2 - right-bottom
+     *
+     * @param p1
+     * @param p2
+     * @return
+     */
+    public ArrayList<Markers> getMarkersOfArea(Point p1, Point p2) {
         ArrayList<Markers> markers = new ArrayList<>();
-        //TODO: implements return Markers after checked area
+        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        //TODO:fix query!
+        String selection = "latitude > ? latitude < ? longitude > ? longitude < ?";
+        String[] selectionArgs = new String[]{
+                String.valueOf(p2.getLatitude()),
+                String.valueOf(p1.getLatitude()),
+                String.valueOf(p1.getLongitude()),
+                String.valueOf(p2.getLongitude())
+        };
+        Cursor cursor = database.query(DBHelper.TABLE_CONTACTS, null, selection,
+                selectionArgs, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                int idIndex = cursor.getColumnIndex(DBHelper.KEY_ID);
+                int latitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LATITUDE);
+                int longtitudeIndex = cursor.getColumnIndex(DBHelper.KEY_LONGITUDE);
+                Log.d("SQLite", "id=" + cursor.getInt(idIndex) +
+                        ", lat=" + cursor.getDouble(latitudeIndex) +
+                        ", lon=" + cursor.getDouble(longtitudeIndex));
+                markers.add(new Markers(cursor.getDouble(latitudeIndex), cursor.getDouble(longtitudeIndex), MarkerType.Crosswalk));
+            } while (cursor.moveToNext());
+        } else {
+            Log.d("SQLite", "0 rows");
+        }
+        cursor.close();
+        database.close();
         return markers;
     }
 
@@ -58,13 +91,15 @@ public class DBWorker {
      * Temporarily!
      * This method load data to Data Base
      */
-    public void initImportGPX() {
-        ArrayList<Markers> markers = GPXParser.initAppParse();
+    public void initImportGPX(Context context) {
+        //ArrayList<Markers> markers = GPXParser.initAppParse();
+        ArrayList<Markers> markers = GPXParser.initAppParse(context);
         addMarkers(markers);
     }
 
     /**
      * This method adding array markers to Data Base
+     *
      * @param markers
      */
     public void addMarkers(ArrayList<Markers> markers) {
