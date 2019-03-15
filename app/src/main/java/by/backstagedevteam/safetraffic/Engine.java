@@ -29,15 +29,22 @@ import java.util.List;
  */
 public class Engine {
     public static final double DEFAULT_AREA_RADIUS = 5;
+    public static final double SAFE_SIZE_AREA = 1.5 * DEFAULT_AREA_RADIUS;
     public static final double DEFAULT_AREA_ROUTE = 5;
     public static final double BUFFER_AREA = 1;
     public MarkersQueue queue;
     private boolean isRun = false;
     private DBWorker dbWorker;
     private ArrayList<Markers> markersBuffer;
+    private int idCurrentMarker = -1;
+    private boolean isNeedBufferUpdate = false;
 
     private Location currentLocation;
 
+    /**
+     * This method safe update current location
+     * @param location - new location
+     */
     public void updateCurrentLocation(Location location) {
         if (location.getLatitude() != 0 && location.getLongitude() != 0) {
             currentLocation = location;
@@ -58,6 +65,20 @@ public class Engine {
         }
     }
 
+    /**
+     * This method return current location is location valid or return {@code null}
+     *
+     * @return {@code Point} is location valid
+     * {@code null} is bad location
+     */
+    public Point getCurrentLocationPoint() {
+        if (currentLocation.getLatitude() != 0 && currentLocation.getLongitude() != 0) {
+            return new Point(currentLocation.getLatitude(), currentLocation.getLongitude());
+        } else {
+            return null;
+        }
+    }
+
     private final Handler handler = new Handler();
 
     public Engine(Context context) {
@@ -72,33 +93,66 @@ public class Engine {
 
     /**
      * This method started routing mode
-     *
-     * @param routes of MapKit
      */
-    public void start(List<DrivingRoute> routes) {
-        queue = new MarkersQueue(getMarkerForDriving(routes));
-        isRun = true;
-        /**
-         * Start background task for checked current pointer
-         */
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() { //Check pointer code from valid notification
+    public void start() {
+        try {
+            if (getCurrentLocation() != null) {
+                isRun = true;
+                /**
+                 * Start background task for checked current pointer
+                 */
                 updateBuffer();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() { //Check pointer code from valid notification
+                        updateBuffer();
+                    }
+                }, 10000);
             }
-        }, 5000);
+        } catch (Exception e) {
+            Log.d("StartEngine", e.getMessage());
+        }
     }
 
+    /**
+     * This method stop routing mode
+     */
+    public void stop() {
+        try {
+            if (isRun) {
+                isRun = false;
+                /**
+                 * Start background task for checked current pointer
+                 */
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() { //Check pointer code from valid notification
+                        //updateBuffer();
+                    }
+                }, 10000);
+            }
+        } catch (Exception e) {
+            Log.d("StartEngine", e.getMessage());
+        }
+    }
+
+    /**
+     * This method update marker buffer
+     */
     public void updateBuffer() {
-        double pLat = currentLocation.getLatitude();
-        double pLon = currentLocation.getLongitude();
-        Log.d("CurrentLocation", "Lat="+pLat +", Lon=" + pLon);
-        Point p1 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
-        Point p2 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
-        Log.d("BufferArea", String.valueOf(Markers.getDistance(p1,p2)) + "m");
+        if (idCurrentMarker == -1) {
+            double pLat = currentLocation.getLatitude();
+            double pLon = currentLocation.getLongitude();
+            Log.d("CurrentLocation", "Lat=" + pLat + ", Lon=" + pLon);
+            Point p1 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
+            Point p2 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
+            Log.d("BufferArea", String.valueOf(Markers.getDistance(p1, p2)) + "m");
 //        markersBuffer = dbWorker.getMarkersOfArea(p1, p2);
-        markersBuffer = dbWorker.getMarkers();
-        Log.d("BufferSize", String.valueOf(markersBuffer.size()));
+            markersBuffer = dbWorker.getMarkers();
+            Log.d("BufferSize", String.valueOf(markersBuffer.size()));
+        } else {
+            isNeedBufferUpdate = true;
+        }
     }
 
     /**
@@ -138,6 +192,7 @@ public class Engine {
 
     /**
      * This method return array markers from Route
+     * Old method?
      *
      * @param routes of MapKit
      * @return array markers
@@ -167,21 +222,52 @@ public class Engine {
      * @param location user
      */
     public void handler(Context context, Location location) {
-        try {
-            if (location.getLatitude() != 0 && location.getLongitude() != 0) {
-                queue.updateLocation(new Point(location.getLatitude(), location.getLongitude()));
-//                 queue.updateLocation(location);
-                changeLocation(context, location);
-            }
-        } catch (Exception e) {
-            Log.d("handler", e.getMessage());
-        }
+        if (isRun) {
+            try {
+                if (location.getLatitude() != 0 && location.getLongitude() != 0) {
+                    updateCurrentLocation(location);
 
+                    handleLocation(location);
+                }
+            } catch (Exception e) {
+                Log.d("handler", e.getMessage());
+            }
+        } else {
+
+        }
     }
 
     /**
-     * Ы
+     * This method checked intersection location and markers
+     *
+     * @param location
+     */
+    private void handleLocation(Location location) {
+        Point pLoc = getCurrentLocationPoint();
+        if (idCurrentMarker != -1) {
+            if (markersBuffer.get(idCurrentMarker).checkIntersection(pLoc, SAFE_SIZE_AREA) == false) {
+                idCurrentMarker = -1;
+                if (isNeedBufferUpdate){
+                    updateBuffer();
+                }
+            }
+            //TODO:Add checked other markers!
+        }
+        for (int i = 0; i < markersBuffer.size(); i++) {
+            if (markersBuffer.get(i).checkIntersection(pLoc)) {
+//                Sending notification
+//                sendNotification(markersBuffer.getType);
+                Log.d("handleLocation", "NOTIFICATION");
+                idCurrentMarker = i;
+                break;
+            }
+        }
+    }
+
+
+    /**
      * This method handles location changes and triggers notifications
+     * Old method.
      *
      * @param context
      * @param location user

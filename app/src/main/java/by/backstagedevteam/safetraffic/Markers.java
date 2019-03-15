@@ -71,6 +71,20 @@ public class Markers {
     /**
      * This method checks the intersection of objects. Uses default area.
      *
+     * @param pos position of the first object
+     * @param radius custom area
+     * @return {@code true} if objects intersect
+     */
+    public boolean checkIntersection(Point pos, double radius) {
+        if (getDistance(new Point(latitude, longitude), pos) < radius) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * This method checks the intersection of objects. Uses default area.
+     *
      * @param pos1 position of the first object
      * @param pos2 position of the second object
      * @return {@code true} if objects intersect
