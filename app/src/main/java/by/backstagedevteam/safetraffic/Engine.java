@@ -202,7 +202,7 @@ public class Engine {
                 } else if (queue.getMarker().getType() == MarkerType.UnregulatedСrosswalk) {
                     text += "Unregulated Crosswalk";
                 }
-                Notification.sendNotification(context, text);
+
             }
         }
     }

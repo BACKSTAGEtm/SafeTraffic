@@ -58,7 +58,7 @@ import java.util.List;
 
 //import LatLngBounds.Builder;
 
-public class MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
+public class  MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
 
     //private final Point ROUTE_START_LOCATION = new Point(59.959194, 30.407094);

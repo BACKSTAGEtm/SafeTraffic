@@ -41,5 +41,6 @@ dependencies {
     compile 'com.yandex.android:transport:3.2.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:mediarouter-v7:28.0.0'
+    implementation 'org.jetbrains:annotations-java5:15.0'
 }
 
