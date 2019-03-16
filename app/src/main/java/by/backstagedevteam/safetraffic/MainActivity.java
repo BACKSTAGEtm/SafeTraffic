@@ -41,6 +41,7 @@ import com.yandex.mapkit.map.CircleMapObject;
 import com.yandex.mapkit.map.CompositeIcon;
 import com.yandex.mapkit.map.IconStyle;
 import com.yandex.mapkit.map.MapObjectCollection;
+import com.yandex.mapkit.map.ModelStyle;
 import com.yandex.mapkit.map.PlacemarkMapObject;
 import com.yandex.mapkit.map.RotationType;
 import com.yandex.mapkit.map.VisibleRegion;
@@ -198,12 +199,11 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     }
 
     public void onDrivingRoutes(List<DrivingRoute> routes) {
-        engine.start(routes);
+        engine.start();
         for (DrivingRoute route : routes) {
             mapObjects.addPolyline(route.getGeometry());
         }
         /****Markers***/
-        createMapObjects(engine.getQueue(), Color.BLUE);
     }
 
     @Override
@@ -238,8 +238,10 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
 
     public void CreateRouting(View view) {
         try {
-            startRouting(new Point(deviceLocation.getLatitude(), deviceLocation.getLongitude()), ROUTE_END_LOCATION);
-        } catch (Exception e){
+            if (engine.getCurrentLocation() != null) {
+                startRouting(engine.getCurrentLocationPoint(), ROUTE_END_LOCATION);
+            }
+        } catch (Exception e) {
             Log.d("CreateRouting", e.getMessage());
         }
     }
@@ -253,21 +255,16 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
      */
     public boolean startRouting(Point start, Point end) {
         try {
-            if (deviceLocation != null) {
-                Point centerScreen = new Point(
-                        (start.getLatitude() + end.getLatitude()) / 2,
-                        (start.getLongitude() + end.getLongitude()) / 2);
-                mapView.getMap().move(new CameraPosition(
-                        //        SCREEN_CENTER, 2, 0, 0));
-                        centerScreen, 8, 0, 0));
-                drivingRouter = DirectionsFactory.getInstance().createDrivingRouter();
-                mapObjects = mapView.getMap().getMapObjects().addCollection();
-                submitRequest(start, end);
-                return true;
-            } else {
-                Toast.makeText(this, "Current location unknown!", Toast.LENGTH_SHORT).show();
-                return false;
-            }
+            Point centerScreen = new Point(
+                    (start.getLatitude() + end.getLatitude()) / 2,
+                    (start.getLongitude() + end.getLongitude()) / 2);
+            mapView.getMap().move(new CameraPosition(
+                    //        SCREEN_CENTER, 2, 0, 0));
+                    centerScreen, 8, 0, 0));
+            drivingRouter = DirectionsFactory.getInstance().createDrivingRouter();
+            mapObjects = mapView.getMap().getMapObjects().addCollection();
+            submitRequest(start, end);
+            return true;
         } catch (Exception e) {
             Log.d("routing", e.getMessage());
             return false;
@@ -292,9 +289,6 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 1000 * 1, 1, locationListener);
-        /*locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
-                locationListener);*/
     }
 
     @Override
