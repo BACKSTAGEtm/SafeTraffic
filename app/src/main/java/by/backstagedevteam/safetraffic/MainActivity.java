@@ -22,6 +22,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yandex.mapkit.MapKitFactory;
@@ -81,6 +85,11 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
 
     private Engine engine;
 
+    private EditText pass;
+    private Button act_change;
+    private RatingBar rating;
+    private TextView text_show;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,11 +98,14 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         DirectionsFactory.initialize(this);
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
+            addListenerOnButton ();
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             setContentView(R.layout.activity_main_v21);
+            addListenerOnButton ();
         }
+
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -122,6 +134,19 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         mapObjects = mapView.getMap().getMapObjects().addCollection();
         createMapObjects(engine.getDB(), Color.RED);
         //TEMP
+    }
+
+    private void addListenerOnButton() {
+        act_change = (Button)findViewById(R.id.nav_info);
+        act_change.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(".HelpActivity");
+                        startActivity(intent);
+                    }
+                }
+        );
     }
 
     /**

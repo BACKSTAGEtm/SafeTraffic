@@ -19,7 +19,7 @@ public class Notification extends Activity{
     private NotificationManager nm;
     private final int NOTIFICATION__ID = 101;
 
-
+    /*
     @Override
     protected void onCreate(Bundle savedInstranceState){
         super.onCreate(savedInstranceState);
@@ -64,4 +64,5 @@ public class Notification extends Activity{
 
 
     }
+    */
 }
