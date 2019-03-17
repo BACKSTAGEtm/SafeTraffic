@@ -22,6 +22,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yandex.mapkit.MapKitFactory;
@@ -59,7 +63,7 @@ import java.util.List;
 
 //import LatLngBounds.Builder;
 
-public class MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
+public class  MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
 
     //private final Point ROUTE_START_LOCATION = new Point(59.959194, 30.407094);
@@ -81,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
 
     private Engine engine;
 
+    private Button act_change;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,11 +96,14 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         DirectionsFactory.initialize(this);
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
+            addListenerOnButton ();
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             setContentView(R.layout.activity_main_v21);
+            addListenerOnButton ();
         }
+
 
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -124,6 +134,20 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
         //TEMP
     }
 
+
+    private void addListenerOnButton() {
+        act_change = (Button)findViewById(R.id.nav_info);
+        act_change.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(".HelpActivity");
+                        startActivity(intent);
+                    }
+                }
+        );
+    }
+
     /**
      * This method add new visible markers to map
      *
@@ -137,11 +161,12 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
             CircleMapObject circle = mapObjects.addCircle(
                     new Circle(item.getPosition(), (float) Markers.DEFAULT_AREA_RADIUS), Color.GREEN, 2, colorfill);
             circle.setZIndex(100.0f);
-
+            /*
             PlacemarkMapObject mark = mapObjects.addPlacemark(item.getPosition());
             mark.setOpacity(0.5f);
             mark.setIcon(ImageProvider.fromResource(this, R.drawable.pin));
             mark.setDraggable(true);
+            */
         }
     }
 
@@ -199,7 +224,9 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
     }
 
     public void onDrivingRoutes(List<DrivingRoute> routes) {
+        Log.d("DrivingRoutes", "ON");
         engine.start();
+
         for (DrivingRoute route : routes) {
             mapObjects.addPolyline(route.getGeometry());
         }
@@ -234,11 +261,13 @@ public class MainActivity extends AppCompatActivity implements UserLocationObjec
                 new ArrayList<DrivingArrivalPoint>(),
                 RequestPointType.WAYPOINT));
         drivingSession = drivingRouter.requestRoutes(requestPoints, options, this);
+        Log.d("SubmitRequest", "Submit");
     }
 
     public void CreateRouting(View view) {
         try {
             if (engine.getCurrentLocation() != null) {
+                Log.d("CreateRouting", "create");
                 startRouting(engine.getCurrentLocationPoint(), ROUTE_END_LOCATION);
             }
         } catch (Exception e) {
