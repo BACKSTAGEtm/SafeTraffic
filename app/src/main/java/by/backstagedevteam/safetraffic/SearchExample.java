@@ -7,7 +7,7 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class SearchExemple extends AppCompatActivity
+public class SearchExample extends AppCompatActivity
             implements SearchView.OnQueryTextListener {
 
         @Override

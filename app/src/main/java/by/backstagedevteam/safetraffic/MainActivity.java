@@ -66,14 +66,7 @@ import java.util.List;
 public class  MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
 
-    //private final Point ROUTE_START_LOCATION = new Point(59.959194, 30.407094);
-    //private final Point ROUTE_END_LOCATION = new Point(55.733330, 37.587649);
-    private final Point ROUTE_START_LOCATION = new Point(52.44251724316334, 31.001705053000766);
     private final Point ROUTE_END_LOCATION = new Point(52.44580572179339, 30.99427892590486);
-
-    private final Point SCREEN_CENTER = new Point(
-            (ROUTE_START_LOCATION.getLatitude() + ROUTE_END_LOCATION.getLatitude()) / 2,
-            (ROUTE_START_LOCATION.getLongitude() + ROUTE_END_LOCATION.getLongitude()) / 2);
 
     private MapView mapView;
     private UserLocationLayer userLocationLayer;
@@ -81,7 +74,6 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     private DrivingRouter drivingRouter;
     private DrivingSession drivingSession;
     private LocationManager locationManager;
-    private Location deviceLocation;
 
     private Engine engine;
 
@@ -104,8 +96,6 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
             //addListenerOnButton ();
         }
 
-
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -115,20 +105,14 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-
+        //Location
         mapView = (MapView) findViewById(R.id.mapView);
-        /*mapView.getMap().move(
-                new CameraPosition(new Point(55.751574,37.573856), 11.0f, 0.0f, 0.0f),
-                new Animation(Animation.Type.SMOOTH,0),
-                null);*/
         userLocationLayer = mapView.getMap().getUserLocationLayer();
         userLocationLayer.setEnabled(true);
         userLocationLayer.setHeadingEnabled(true);
         userLocationLayer.setObjectListener(this);
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
         engine = new Engine(this);
-
         mapObjects = mapView.getMap().getMapObjects().addCollection();
         createMapObjects(engine.getDB(), Color.RED);
         //TEMP
@@ -196,22 +180,13 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         CompositeIcon pinIcon = userLocationView.getPin().useCompositeIcon();
         /*
         pinIcon.setIcon(
-                "icon",
-                ImageProvider.fromResource(this, R.drawable.icon),
-                new IconStyle().setAnchor(new PointF(0f, 0f))
-                        .setRotationType(RotationType.ROTATE)
-                        .setZIndex(0f)
-                        .setScale(1f)
-        );*/
-
-        pinIcon.setIcon(
                 "pin",
                 ImageProvider.fromResource(this, R.drawable.search_result),
                 new IconStyle().setAnchor(new PointF(0.5f, 0.5f))
                         .setRotationType(RotationType.ROTATE)
                         .setZIndex(1f)
                         .setScale(0.5f)
-        );
+        );*/
         userLocationView.getAccuracyCircle().setFillColor(Color.BLUE);
     }
 
@@ -226,11 +201,9 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     public void onDrivingRoutes(List<DrivingRoute> routes) {
         Log.d("DrivingRoutes", "ON");
         engine.start();
-
         for (DrivingRoute route : routes) {
             mapObjects.addPolyline(route.getGeometry());
         }
-        /****Markers***/
     }
 
     @Override
@@ -241,14 +214,17 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         } else if (error instanceof NetworkError) {
             errorMessage = getString(R.string.network_error_message);
         }
-
         Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
     }
 
+    /**
+     * This method create driver routing
+     * @param start location
+     * @param end location
+     */
     private void submitRequest(Point start, Point end) {
         DrivingOptions options = new DrivingOptions();
         ArrayList<RequestPoint> requestPoints = new ArrayList<>();
-        //Point startLocation = new Point(start.getLatitude(), deviceLocation.getLongitude());
         requestPoints.add(new RequestPoint(
 //                ROUTE_START_LOCATION,
                 start,
@@ -261,9 +237,12 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
                 new ArrayList<DrivingArrivalPoint>(),
                 RequestPointType.WAYPOINT));
         drivingSession = drivingRouter.requestRoutes(requestPoints, options, this);
-        Log.d("SubmitRequest", "Submit");
     }
 
+    /**
+     * This method implementation button started routing mode. Allow notification
+     * @param view
+     */
     public void CreateRouting(View view) {
         try {
             if (engine.getCurrentLocation() != null) {
@@ -289,8 +268,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
                     (start.getLatitude() + end.getLatitude()) / 2,
                     (start.getLongitude() + end.getLongitude()) / 2);
             mapView.getMap().move(new CameraPosition(
-                    //        SCREEN_CENTER, 2, 0, 0));
-                    centerScreen, 8, 0, 0));
+                    centerScreen, 15, 0, 0));
             drivingRouter = DirectionsFactory.getInstance().createDrivingRouter();
             mapObjects = mapView.getMap().getMapObjects().addCollection();
             submitRequest(start, end);
@@ -302,7 +280,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     }
 
     /**
-     * Location zone
+     * LOCATION ZONE
      */
     @Override
     protected void onResume() {
@@ -324,7 +302,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     @Override
     protected void onPause() {
         super.onPause();
-        locationManager.removeUpdates(locationListener);
+        //locationManager.removeUpdates(locationListener);
     }
 
     private LocationListener locationListener = new LocationListener() {
@@ -332,7 +310,6 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         public void onLocationChanged(Location location) {
             engine.updateCurrentLocation(location);
             Log.d("LocChange", location.getLatitude() + ", " + location.getLongitude());
-            deviceLocation = location;
             //Engine
             if (location != null) {
                 engine.handler(MainActivity.this, location);
@@ -363,7 +340,6 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
             Location lastLocation = locationManager.getLastKnownLocation(provider);
             Log.d("LocLast", lastLocation.getLatitude() + ", " + lastLocation.getLongitude());
             if (lastLocation != null) {
-                deviceLocation = lastLocation;
                 engine.handler(MainActivity.this, lastLocation);
             }
             engine.updateCurrentLocation(locationManager.getLastKnownLocation(provider));
@@ -390,6 +366,10 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     private void changeStatus(String status) {
         Toast.makeText(this, "Status" + status, Toast.LENGTH_SHORT).show();
     }
+
+    /**
+     * END LOCATION ZONE
+     */
 
 
     @Override

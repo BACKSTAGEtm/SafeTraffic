@@ -191,6 +191,14 @@ public class GPXParser {
         return xpp;
     }
 
+    /**
+     * This method implements prepared XmlPullParser for parsing from raw
+     *
+     * @param context for RAW
+     * @return prepared XmlPullParser
+     * @throws XmlPullParserException
+     * @throws FileNotFoundException
+     */
     public static XmlPullParser prepareXppFromRaw(Context context) throws XmlPullParserException, FileNotFoundException {
         XmlPullParserFactory factory;
         factory = XmlPullParserFactory.newInstance();

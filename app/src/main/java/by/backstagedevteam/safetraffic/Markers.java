@@ -13,7 +13,7 @@ import com.yandex.mapkit.geometry.Point;
  * @since 2019
  */
 public class Markers {
-    public static final double DEFAULT_AREA_RADIUS = 5;
+    public static final double DEFAULT_AREA_RADIUS = 10;
 
     private double latitude;
     private double longitude;
@@ -104,7 +104,7 @@ public class Markers {
      * @param radius custom area
      * @return {@code true} if objects intersect
      */
-    public boolean checkIntersection(Point pos1, Point pos2, double radius) {
+    public static boolean checkIntersection(Point pos1, Point pos2, double radius) {
         if (getDistance(pos1, pos2) < radius) {
             return true;
         }
