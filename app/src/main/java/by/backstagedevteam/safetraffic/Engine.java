@@ -246,12 +246,16 @@ public class Engine {
      */
     private void handleLocation(Location location) {
         Point pLoc = getCurrentLocationPoint();
+        Log.d("handleLocation", "id = " + idCurrentMarker);
         if (idCurrentMarker != -1) {
             if (markersBuffer.get(idCurrentMarker).checkIntersection(pLoc, SAFE_SIZE_AREA) == false) {
                 idCurrentMarker = -1;
                 if (isNeedBufferUpdate){
                     updateBuffer();
                 }
+            } else {
+                //Break check intersection
+                return;
             }
             //TODO:Add checked other markers!
         }
@@ -259,8 +263,8 @@ public class Engine {
             if (markersBuffer.get(i).checkIntersection(pLoc)) {
 //                Sending notification
 //                sendNotification(markersBuffer.getType);
-                Log.d("handleLocation", "NOTIFICATION");
                 idCurrentMarker = i;
+                Log.d("handleLocation", "NOTIFICATION, Dist: " + Markers.getDistance(markersBuffer.get(i).getPosition(),pLoc));
                 break;
             }
         }

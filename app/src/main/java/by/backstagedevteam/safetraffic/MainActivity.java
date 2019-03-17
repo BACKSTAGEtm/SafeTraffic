@@ -96,12 +96,12 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         DirectionsFactory.initialize(this);
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
-            addListenerOnButton ();
+            //addListenerOnButton ();
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             setContentView(R.layout.activity_main_v21);
-            addListenerOnButton ();
+            //addListenerOnButton ();
         }
 
 
@@ -269,6 +269,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
             if (engine.getCurrentLocation() != null) {
                 Log.d("CreateRouting", "create");
                 startRouting(engine.getCurrentLocationPoint(), ROUTE_END_LOCATION);
+                engine.start();
             }
         } catch (Exception e) {
             Log.d("CreateRouting", e.getMessage());
