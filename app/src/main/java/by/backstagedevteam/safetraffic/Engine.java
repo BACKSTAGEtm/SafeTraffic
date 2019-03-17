@@ -96,6 +96,7 @@ public class Engine {
      */
     public void start() {
         try {
+            Log.d("StartEngine", "try");
             if (getCurrentLocation() != null) {
                 isRun = true;
                 /**
@@ -108,6 +109,7 @@ public class Engine {
                         updateBuffer();
                     }
                 }, 10000);
+                Log.d("StartedEngine", "STARTED");
             }
         } catch (Exception e) {
             Log.d("StartEngine", e.getMessage());
@@ -132,7 +134,7 @@ public class Engine {
                 }, 10000);
             }
         } catch (Exception e) {
-            Log.d("StartEngine", e.getMessage());
+            Log.d("StopEngine", e.getMessage());
         }
     }
 

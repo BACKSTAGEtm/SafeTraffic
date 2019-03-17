@@ -98,12 +98,12 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         DirectionsFactory.initialize(this);
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
-            addListenerOnButton ();
+            //addListenerOnButton ();
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             setContentView(R.layout.activity_main_v21);
-            addListenerOnButton ();
+            //addListenerOnButton ();
         }
 
 
@@ -136,6 +136,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         //TEMP
     }
 
+    /*
     private void addListenerOnButton() {
         act_change = (Button)findViewById(R.id.nav_info);
         act_change.setOnClickListener(
@@ -147,7 +148,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
                     }
                 }
         );
-    }
+    }*/
 
     /**
      * This method add new visible markers to map
@@ -162,11 +163,12 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
             CircleMapObject circle = mapObjects.addCircle(
                     new Circle(item.getPosition(), (float) Markers.DEFAULT_AREA_RADIUS), Color.GREEN, 2, colorfill);
             circle.setZIndex(100.0f);
-
+            /*
             PlacemarkMapObject mark = mapObjects.addPlacemark(item.getPosition());
             mark.setOpacity(0.5f);
             mark.setIcon(ImageProvider.fromResource(this, R.drawable.pin));
             mark.setDraggable(true);
+            */
         }
     }
 
@@ -224,7 +226,9 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     }
 
     public void onDrivingRoutes(List<DrivingRoute> routes) {
+        Log.d("DrivingRoutes", "ON");
         engine.start();
+
         for (DrivingRoute route : routes) {
             mapObjects.addPolyline(route.getGeometry());
         }
@@ -259,11 +263,13 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
                 new ArrayList<DrivingArrivalPoint>(),
                 RequestPointType.WAYPOINT));
         drivingSession = drivingRouter.requestRoutes(requestPoints, options, this);
+        Log.d("SubmitRequest", "Submit");
     }
 
     public void CreateRouting(View view) {
         try {
             if (engine.getCurrentLocation() != null) {
+                Log.d("CreateRouting", "create");
                 startRouting(engine.getCurrentLocationPoint(), ROUTE_END_LOCATION);
             }
         } catch (Exception e) {
