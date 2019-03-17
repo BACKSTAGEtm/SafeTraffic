@@ -85,10 +85,8 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
 
     private Engine engine;
 
-    private EditText pass;
     private Button act_change;
-    private RatingBar rating;
-    private TextView text_show;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +96,12 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         DirectionsFactory.initialize(this);
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
-            //addListenerOnButton ();
+            addListenerOnButton ();
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             setContentView(R.layout.activity_main_v21);
-            //addListenerOnButton ();
+            addListenerOnButton ();
         }
 
 
@@ -136,7 +134,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         //TEMP
     }
 
-    /*
+
     private void addListenerOnButton() {
         act_change = (Button)findViewById(R.id.nav_info);
         act_change.setOnClickListener(
@@ -148,7 +146,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
                     }
                 }
         );
-    }*/
+    }
 
     /**
      * This method add new visible markers to map
