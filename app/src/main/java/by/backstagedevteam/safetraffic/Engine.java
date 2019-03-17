@@ -221,7 +221,7 @@ public class Engine {
                 if (location.getLatitude() != 0 && location.getLongitude() != 0) {
                     updateCurrentLocation(location);
 
-                    handleLocation(location);
+                    handleLocation(context,location);
                 }
             } catch (Exception e) {
                 Log.d("handler", e.getMessage());
@@ -236,7 +236,7 @@ public class Engine {
      *
      * @param location
      */
-    private void handleLocation(Location location) {
+    private void handleLocation(Context context,Location location) {
         Point pLoc = getCurrentLocationPoint();
         Log.d("handleLocation", "id = " + idCurrentMarker);
         if (idCurrentMarker != -1) {
@@ -254,6 +254,17 @@ public class Engine {
             if (markersBuffer.get(i).checkIntersection(pLoc)) {
 //                Sending notification
 //                sendNotification(markersBuffer.getType);
+                String msg = "Внимание! Впереди ";
+                if (markersBuffer.get(i).getType()==MarkerType.UnregulatedСrosswalk){
+                    msg += "нерегулируемый перекресток.";
+                } else
+                if (markersBuffer.get(i).getType()==MarkerType.Crosswalk){
+                    msg += "регулируемый перекресток.";
+                } else
+                if (markersBuffer.get(i).getType()==MarkerType.DangerousArea){
+                    msg += "опасная зона.";
+                }
+                    Notification.sendNotification(context, msg);
                 idCurrentMarker = i;
                 Log.d("handleLocation", "NOTIFICATION, Dist: " + Markers.getDistance(markersBuffer.get(i).getPosition(), pLoc));
                 break;
