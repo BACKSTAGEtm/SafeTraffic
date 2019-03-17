@@ -25,7 +25,7 @@ public class Engine {
     public static final double DEFAULT_AREA_RADIUS = 30;
     //reset marker notification area
     public static final double SAFE_SIZE_AREA = 1.5 * DEFAULT_AREA_RADIUS;
-    public static final double BUFFER_AREA = 1; //Lan and lon
+    public static final double BUFFER_AREA = 0.1; //Lan and lon
 
     private boolean isRun = false;
     private DBWorker dbWorker;
