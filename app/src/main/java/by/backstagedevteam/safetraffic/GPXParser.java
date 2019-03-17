@@ -72,8 +72,10 @@ public class GPXParser {
             boolean isGPX = false;
             boolean isWPT = false;
             boolean isName = false;
+            boolean isDesc = false;
             double lon = 0, lat = 0;
             String name = "";
+            MarkerType type = MarkerType.Crosswalk;
             while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
                 String tmp = "";
 
@@ -115,16 +117,20 @@ public class GPXParser {
                         if (isWPT && parser.getName().equals("name")) {
                             isName = true;
                         }
+                        if (isWPT && parser.getName().equals("desc")) {
+                            isDesc = true;
+                        }
                         break;
                     case XmlPullParser.END_TAG:
                         Log.d(TAG, "END TAG: tag name = " + parser.getName());
                         if (parser.getName().equals("wpt")) {
                             //TODO AddHint!
-                            markers.add(new Markers(lat, lon, MarkerType.Crosswalk));
+                            markers.add(new Markers(lat, lon, type));
                             isWPT = false;
                             isName = false;
                             lat = 0;
                             lon = 0;
+                            type = MarkerType.Crosswalk;
                         }
                         break;
                     case XmlPullParser.TEXT:
@@ -132,6 +138,16 @@ public class GPXParser {
                         /******/
                         if (isName) {
                             name = parser.getText();
+                        }
+                        if (isDesc) {
+                            if (parser.getText().equals("UnregulatedСrosswalk")) {
+                                type =MarkerType.UnregulatedСrosswalk;
+                            } else
+                            if (parser.getText().equals("DangerousArea")) {
+                                type =MarkerType.DangerousArea;
+                            } else
+                            if (parser.getText().equals("Crosswalk")) {
+                            }
                         }
                         break;
                     default:
