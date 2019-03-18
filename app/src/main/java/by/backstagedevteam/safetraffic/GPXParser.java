@@ -51,8 +51,10 @@ public class GPXParser {
     public static ArrayList<Markers> initAppParse(Context context) {
         ArrayList<Markers> markers = new ArrayList<>();
         try {
-            XmlPullParser xpp = prepareXppFromRaw(context);
-            markers = parser(xpp);
+            XmlPullParser xpp = prepareXppFromRaw(context, R.raw.db001);
+            markers.addAll(parser(xpp));
+            xpp = prepareXppFromRaw(context, R.raw.db002);
+            markers.addAll(parser(xpp));
         } catch (Exception e) {
             Log.d("GPXParser", "Error init parse");
         }
@@ -215,12 +217,13 @@ public class GPXParser {
      * @throws XmlPullParserException
      * @throws FileNotFoundException
      */
-    public static XmlPullParser prepareXppFromRaw(Context context) throws XmlPullParserException, FileNotFoundException {
+    public static XmlPullParser prepareXppFromRaw(Context context, int id) throws XmlPullParserException, FileNotFoundException {
         XmlPullParserFactory factory;
         factory = XmlPullParserFactory.newInstance();
         XmlPullParser xpp = factory.newPullParser();
         Resources r = context.getResources();
-        InputStream is = r.openRawResource(R.raw.db001);
+        //InputStream is = r.openRawResource(R.raw.db001);
+        InputStream is = r.openRawResource(id);
         xpp.setInput(new InputStreamReader(is));
         return xpp;
     }
