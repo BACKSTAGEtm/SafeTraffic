@@ -32,12 +32,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //implementation 'com.google.android.gms:play-services-location:16.0.0'
     //MapKit
     implementation 'com.yandex.android:mapkit:3.2.0'
     //module MapKit
     implementation 'com.yandex.android:directions:3.2.0'
-    //compile 'com.yandex.android:places:3.2.0'
-    //compile 'com.yandex.android:search:3.2.0'
+    //implementation 'com.yandex.android:places:3.2.0'
+    implementation 'com.yandex.android:search:3.2.0'
     implementation 'com.yandex.android:transport:3.2.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support:mediarouter-v7:28.0.0'

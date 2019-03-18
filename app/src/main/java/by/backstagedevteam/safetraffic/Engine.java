@@ -25,7 +25,7 @@ public class Engine {
     public static final double DEFAULT_AREA_RADIUS = 30;
     //reset marker notification area
     public static final double SAFE_SIZE_AREA = 1.5 * DEFAULT_AREA_RADIUS;
-    public static final double BUFFER_AREA = 0.1; //Lan and lon
+    public static final double BUFFER_AREA = 0.01; //Lan and lon +=2,6km
 
     private boolean isRun = false;
     private DBWorker dbWorker;
@@ -139,11 +139,11 @@ public class Engine {
             double pLat = currentLocation.getLatitude();
             double pLon = currentLocation.getLongitude();
             Log.d("CurrentLocation", "Lat=" + pLat + ", Lon=" + pLon);
-            Point p1 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
-            Point p2 = new Point(pLat + BUFFER_AREA, pLon - BUFFER_AREA);
+            Point p1 = new Point(pLat - BUFFER_AREA, pLon - BUFFER_AREA);
+            Point p2 = new Point(pLat + BUFFER_AREA, pLon + BUFFER_AREA);
             Log.d("BufferArea", String.valueOf(Markers.getDistance(p1, p2)) + "m");
-//        markersBuffer = dbWorker.getMarkersOfArea(p1, p2);
-            markersBuffer = dbWorker.getMarkers();
+        markersBuffer = dbWorker.getMarkersOfArea(p1, p2);
+//            markersBuffer = dbWorker.getMarkers();
             Log.d("BufferSize", String.valueOf(markersBuffer.size()));
         } else {
             isNeedBufferUpdate = true;

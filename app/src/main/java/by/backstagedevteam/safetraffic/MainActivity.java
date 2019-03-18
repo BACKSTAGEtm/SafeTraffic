@@ -247,6 +247,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         try {
             if (engine.getCurrentLocation() != null) {
                 Log.d("CreateRouting", "create");
+
                 startRouting(engine.getCurrentLocationPoint(), ROUTE_END_LOCATION);
                 engine.start();
             }

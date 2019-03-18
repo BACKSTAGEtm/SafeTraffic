@@ -54,9 +54,31 @@ public class DBWorker {
      *
      * @param p1
      * @param p2
-     * @return
+     * @return markers
      */
     public ArrayList<Markers> getMarkersOfArea(Point p1, Point p2) {
+        ArrayList<Markers> db = getMarkers();
+        ArrayList<Markers> markers = new ArrayList<>();
+        for (int i = 0; i < db.size(); i++) {
+            if (db.get(i).getPosition().getLatitude() > p1.getLatitude() &&
+                    db.get(i).getPosition().getLongitude() > p1.getLongitude() &&
+                    db.get(i).getPosition().getLatitude() < p2.getLatitude() &&
+                    db.get(i).getPosition().getLongitude() < p2.getLongitude()) {
+                markers.add(db.get(i));
+            }
+        }
+        return markers;
+    }
+
+    /**
+     * This method return markers of area. p1 - left-top, p2 - right-bottom
+     * don't worked method. Bad query!
+     *
+     * @param p1
+     * @param p2
+     * @return markers
+     */
+    public ArrayList<Markers> getMarkersOfAreaBySQL(Point p1, Point p2) {
         ArrayList<Markers> markers = new ArrayList<>();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         //TODO:fix query!
