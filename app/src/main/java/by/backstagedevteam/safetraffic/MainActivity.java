@@ -462,20 +462,31 @@ public class  MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_manage) {
             tv.setText("Нажата кнопка: Настройки");
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
 
 
 
         } else if (id == R.id.nav_rez) {
             tv.setText("Нажата кнопка: Выбор режим");
+            Intent intent = new Intent(this, RezimActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_bd) {
             tv.setText("Нажата кнопка: Дополнить карту");
+            Intent intent = new Intent(this, BdActivity.class);
+            startActivity(intent);
+
 
         } else if (id == R.id.nav_share) {
             tv.setText("Нажата кнопка: Поделиться");
+            Intent intent = new Intent(this, ShareActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_send) {
             tv.setText("Нажата кнопка: Отправить сообщение");
+            Intent intent = new Intent(this, SendActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_info) {
             tv.setText("Нажата кнопка: Подсказки");
@@ -485,6 +496,8 @@ public class  MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_erorr) {
             tv.setText("Нажата кнопка: Отправить отчёт об ошибке");
+            Intent intent = new Intent(this, ErrorActivity.class);
+            startActivity(intent);
 
         } else if (id == R.id.nav_exit) {
             tv.setText("Нажата кнопка: Выход");
