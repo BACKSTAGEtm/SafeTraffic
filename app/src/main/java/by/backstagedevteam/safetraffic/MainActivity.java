@@ -63,7 +63,7 @@ import java.util.List;
 
 //import LatLngBounds.Builder;
 
-public class  MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity
         implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
 
     TextView tv;
@@ -94,11 +94,11 @@ public class  MainActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
 
-           // addListenerOnButton ();
-           //  act_change = (Button) findViewById(R.id.nav_info);
-           //   act_change.setOnClickListener((View.OnClickListener) this);
+            // addListenerOnButton ();
+            //  act_change = (Button) findViewById(R.id.nav_info);
+            //   act_change.setOnClickListener((View.OnClickListener) this);
 
-            tv=findViewById(R.id.nav_tv);
+            tv = findViewById(R.id.nav_tv);
 
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
@@ -109,7 +109,7 @@ public class  MainActivity extends AppCompatActivity
             //  act_change = (Button) findViewById(R.id.nav_info);
             //  act_change.setOnClickListener((View.OnClickListener) this);
 
-            tv=findViewById(R.id.nav_tv);
+            tv = findViewById(R.id.nav_tv);
 
         }
 
@@ -131,7 +131,8 @@ public class  MainActivity extends AppCompatActivity
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         engine = new Engine(this);
         mapObjects = mapView.getMap().getMapObjects().addCollection();
-        createMapObjects(engine.getDB(), Color.RED);
+        //mapView.getMap().getMapObjects().
+        //createMapObjects(engine.getDB(), Color.RED);
         //TEMP
     }
 
@@ -265,8 +266,9 @@ public class  MainActivity extends AppCompatActivity
 
     /**
      * This method create driver routing
+     *
      * @param start location
-     * @param end location
+     * @param end   location
      */
     private void submitRequest(Point start, Point end) {
         DrivingOptions options = new DrivingOptions();
@@ -287,6 +289,7 @@ public class  MainActivity extends AppCompatActivity
 
     /**
      * This method implementation button started routing mode. Allow notification
+     *
      * @param view
      */
     public void CreateRouting(View view) {
@@ -362,6 +365,12 @@ public class  MainActivity extends AppCompatActivity
                 engine.handler(MainActivity.this, location);
             }
 
+            if (engine.isUpdatedBuffer) {
+                Log.d("renderBuffer","Render buffer");
+                engine.isUpdatedBuffer = false;
+                mapObjects.clear();
+                createMapObjects(engine.getBuffer(), Color.RED);
+            }
         }
 
         @Override
@@ -466,7 +475,6 @@ public class  MainActivity extends AppCompatActivity
             startActivity(intent);
 
 
-
         } else if (id == R.id.nav_rez) {
             tv.setText("Нажата кнопка: Выбор режим");
             Intent intent = new Intent(this, RezimActivity.class);
@@ -490,8 +498,8 @@ public class  MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_info) {
             tv.setText("Нажата кнопка: Подсказки");
-                Intent intent = new Intent(this, HelpActivity.class);
-                startActivity(intent);
+            Intent intent = new Intent(this, HelpActivity.class);
+            startActivity(intent);
 
 
         } else if (id == R.id.nav_erorr) {

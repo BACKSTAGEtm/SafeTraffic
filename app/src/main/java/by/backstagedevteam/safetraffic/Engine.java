@@ -34,6 +34,8 @@ public class Engine {
     private int idCurrentMarker = -1;
     private boolean isNeedBufferUpdate = false;
 
+    public boolean isUpdatedBuffer = false;
+
     private Location currentLocation;
 
     /**
@@ -145,6 +147,7 @@ public class Engine {
         markersBuffer = dbWorker.getMarkersOfArea(p1, p2);
 //            markersBuffer = dbWorker.getMarkers();
             Log.d("BufferSize", String.valueOf(markersBuffer.size()));
+            isUpdatedBuffer = true;
         } else {
             isNeedBufferUpdate = true;
         }
