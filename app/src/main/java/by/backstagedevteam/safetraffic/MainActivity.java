@@ -63,7 +63,11 @@ import java.util.List;
 
 //import LatLngBounds.Builder;
 
-public class  MainActivity extends AppCompatActivity implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
+public class  MainActivity extends AppCompatActivity
+        implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
+
+    TextView tv;
+
     private final String MAPKIT_API_KEY = "a574df9b-3431-4ff7-a6a9-2532869cfc80";
 
     private final Point ROUTE_END_LOCATION = new Point(52.44580572179339, 30.99427892590486);
@@ -77,7 +81,8 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
 
     private Engine engine;
 
-    private Button act_change;
+    //private Button act_change;
+    //Button act_change;
 
 
     @Override
@@ -88,12 +93,24 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         DirectionsFactory.initialize(this);
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
-            //addListenerOnButton ();
+
+           // addListenerOnButton ();
+           //  act_change = (Button) findViewById(R.id.nav_info);
+           //   act_change.setOnClickListener((View.OnClickListener) this);
+
+            tv=findViewById(R.id.nav_tv);
+
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
             setContentView(R.layout.activity_main_v21);
+
             //addListenerOnButton ();
+            //  act_change = (Button) findViewById(R.id.nav_info);
+            //  act_change.setOnClickListener((View.OnClickListener) this);
+
+            tv=findViewById(R.id.nav_tv);
+
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -119,7 +136,7 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
     }
 
 
-    private void addListenerOnButton() {
+    /*  private void addListenerOnButton() {
         act_change = (Button)findViewById(R.id.nav_info);
         act_change.setOnClickListener(
                 new View.OnClickListener() {
@@ -131,6 +148,35 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
                 }
         );
     }
+    */
+
+
+    /*  private void addListenerOnButton() {
+            act_change = (Button)findViewById(R.id.nav_info);
+            act_change.setOnClickListener(
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(".HelpActivity");
+                            startActivity(intent);
+                        }
+                    }
+            );
+        }
+        */
+ /*  @Override
+   public void onClick(View v){
+       switch (v.getId()) {
+           case R.id.nav_info:
+                Intent intent = new Intent(this, HelpActivity.class);
+                startActivity(intent);
+                break;
+           default:
+                break;
+
+       }
+   }
+   */
 
     /**
      * This method add new visible markers to map
@@ -415,17 +461,35 @@ public class  MainActivity extends AppCompatActivity implements UserLocationObje
         int id = item.getItemId();
 
         if (id == R.id.nav_manage) {
+            tv.setText("Нажата кнопка: Настройки");
+
 
 
         } else if (id == R.id.nav_rez) {
+            tv.setText("Нажата кнопка: Выбор режим");
 
-        } else if (id == R.id.nav_info) {
-
-        } else if (id == R.id.nav_erorr) {
+        } else if (id == R.id.nav_bd) {
+            tv.setText("Нажата кнопка: Дополнить карту");
 
         } else if (id == R.id.nav_share) {
+            tv.setText("Нажата кнопка: Поделиться");
 
         } else if (id == R.id.nav_send) {
+            tv.setText("Нажата кнопка: Отправить сообщение");
+
+        } else if (id == R.id.nav_info) {
+            tv.setText("Нажата кнопка: Подсказки");
+                Intent intent = new Intent(this, HelpActivity.class);
+                startActivity(intent);
+
+
+        } else if (id == R.id.nav_erorr) {
+            tv.setText("Нажата кнопка: Отправить отчёт об ошибке");
+
+        } else if (id == R.id.nav_exit) {
+            tv.setText("Нажата кнопка: Выход");
+            finish();
+
 
         }
 
