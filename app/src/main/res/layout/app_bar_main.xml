@@ -31,13 +31,13 @@
         android:layout_height="wrap_content"/>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/button_start"
         android:layout_width="220dp"
         android:layout_height="wrap_content"
+        android:onClick="CreateRouting"
         android:text="Начать"
         app:layout_anchor="@+id/include"
-        app:layout_anchorGravity="bottom|center"
-        android:onClick="CreateRouting"/>
+        app:layout_anchorGravity="bottom|center" />
 
 
 </android.support.design.widget.CoordinatorLayout>

@@ -1,6 +1,10 @@
 package by.backstagedevteam.safetraffic;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -13,6 +17,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -63,6 +68,8 @@ import java.util.List;
 
 //import LatLngBounds.Builder;
 
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
+
 public class MainActivity extends AppCompatActivity
         implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
 
@@ -80,6 +87,13 @@ public class MainActivity extends AppCompatActivity
     private LocationManager locationManager;
 
     private Engine engine;
+
+
+    private NotificationManager notificationManager;
+    private static final int NOTIFI_ID = 2;
+    private static final String CHANNEL_ID = "CHANEL_ID";
+    Button b1;
+
 
     //private Button act_change;
     //Button act_change;
@@ -100,6 +114,30 @@ public class MainActivity extends AppCompatActivity
 
             tv = findViewById(R.id.nav_tv);
 
+
+            b1=findViewById(R.id.button_start);
+            notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            b1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    NotificationCompat.Builder notificationBuilder =
+                            new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                    .setAutoCancel(false)
+                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                    .setWhen(System.currentTimeMillis())
+                                    .setContentIntent(pendingIntent)
+                                    .setContentTitle("НАЧАТО!")
+                                    .setContentText("Какой то текст .........")
+                                    .setPriority(PRIORITY_HIGH);
+                    createChannelIfNeeded(notificationManager);
+                    notificationManager.notify(NOTIFI_ID, notificationBuilder.build());
+                }
+            });
+
+
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else {
@@ -110,6 +148,29 @@ public class MainActivity extends AppCompatActivity
             //  act_change.setOnClickListener((View.OnClickListener) this);
 
             tv = findViewById(R.id.nav_tv);
+
+            b1=findViewById(R.id.button_start);
+            notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            b1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                    NotificationCompat.Builder notificationBuilder =
+                            new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
+                                    .setAutoCancel(false)
+                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
+                                    .setWhen(System.currentTimeMillis())
+                                    .setContentIntent(pendingIntent)
+                                    .setContentTitle("НАЧАТО!")
+                                    .setContentText("Какой то текст .........")
+                                    .setPriority(PRIORITY_HIGH);
+                    createChannelIfNeeded(notificationManager);
+                    notificationManager.notify(NOTIFI_ID, notificationBuilder.build());
+
+                }
+            });
 
         }
 
@@ -135,6 +196,16 @@ public class MainActivity extends AppCompatActivity
         //createMapObjects(engine.getDB(), Color.RED);
         //TEMP
     }
+
+
+    public static void createChannelIfNeeded(NotificationManager manager){
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
+            manager.createNotificationChannel(notificationChannel);
+
+        }
+    }
+
 
 
     /*  private void addListenerOnButton() {
