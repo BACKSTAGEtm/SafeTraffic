@@ -32,12 +32,13 @@
 
     <Button
         android:id="@+id/button_start"
-        android:layout_width="220dp"
+        android:layout_width="54dp"
         android:layout_height="wrap_content"
+        android:background="@android:drawable/ic_menu_mylocation"
         android:onClick="CreateRouting"
-        android:text="Начать"
         app:layout_anchor="@+id/include"
-        app:layout_anchorGravity="bottom|center" />
+        app:layout_anchorGravity="end|center"
+        tools:visibility="visible" />
 
 
 </android.support.design.widget.CoordinatorLayout>

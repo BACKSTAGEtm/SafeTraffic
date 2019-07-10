@@ -22,6 +22,7 @@
             android:layout_weight="1"
             android:background="?attr/colorPrimary"
             app:layout_scrollFlags="scroll|enterAlways"
+            app:navigationIcon="@android:drawable/ic_dialog_email"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name">
 
