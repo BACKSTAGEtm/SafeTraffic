@@ -3,11 +3,8 @@ package by.backstagedevteam.safetraffic;
 import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PointF;
 import android.location.Location;
@@ -15,9 +12,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -28,11 +25,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yandex.mapkit.Animation;
 import com.yandex.mapkit.MapKitFactory;
 import com.yandex.mapkit.directions.DirectionsFactory;
 import com.yandex.mapkit.directions.driving.DrivingArrivalPoint;
@@ -45,15 +41,12 @@ import com.yandex.mapkit.directions.driving.RequestPointType;
 import com.yandex.mapkit.geometry.Circle;
 import com.yandex.mapkit.geometry.Point;
 import com.yandex.mapkit.layers.ObjectEvent;
+import com.yandex.mapkit.location.LocationViewSource;
+import com.yandex.mapkit.location.internal.LocationViewSourceBinding;
 import com.yandex.mapkit.map.CameraPosition;
 import com.yandex.mapkit.map.CircleMapObject;
 import com.yandex.mapkit.map.CompositeIcon;
-import com.yandex.mapkit.map.IconStyle;
 import com.yandex.mapkit.map.MapObjectCollection;
-import com.yandex.mapkit.map.ModelStyle;
-import com.yandex.mapkit.map.PlacemarkMapObject;
-import com.yandex.mapkit.map.RotationType;
-import com.yandex.mapkit.map.VisibleRegion;
 import com.yandex.mapkit.mapview.MapView;
 import com.yandex.mapkit.user_location.UserLocationLayer;
 import com.yandex.mapkit.user_location.UserLocationObjectListener;
@@ -67,8 +60,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 //import LatLngBounds.Builder;
-
-import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
 
 public class MainActivity extends AppCompatActivity
         implements UserLocationObjectListener, DrivingSession.DrivingRouteListener, NavigationView.OnNavigationItemSelectedListener {
@@ -88,16 +79,9 @@ public class MainActivity extends AppCompatActivity
 
     private Engine engine;
 
-
-    private NotificationManager notificationManager;
     private static final int NOTIFI_ID = 2;
     private static final String CHANNEL_ID = "CHANEL_ID";
     Button b1;
-
-
-    //private Button act_change;
-    //Button act_change;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,72 +89,34 @@ public class MainActivity extends AppCompatActivity
         MapKitFactory.setApiKey(MAPKIT_API_KEY);
         MapKitFactory.initialize(this);
         DirectionsFactory.initialize(this);
+
         if (Build.VERSION.SDK_INT >= 23) {
             setContentView(R.layout.activity_main);
-
-            // addListenerOnButton ();
-            //  act_change = (Button) findViewById(R.id.nav_info);
-            //   act_change.setOnClickListener((View.OnClickListener) this);
-
             tv = findViewById(R.id.nav_tv);
-
-
-            b1=findViewById(R.id.button_start);
-            notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            b1 = findViewById(R.id.button_start);
             b1.setOnClickListener(new View.OnClickListener() {
+
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    NotificationCompat.Builder notificationBuilder =
-                            new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                                    .setAutoCancel(false)
-                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                    .setWhen(System.currentTimeMillis())
-                                    .setContentIntent(pendingIntent)
-                                    .setContentTitle("Поиск местоположения!")
-                                    .setPriority(PRIORITY_HIGH);
-                    createChannelIfNeeded(notificationManager);
-                    notificationManager.notify(NOTIFI_ID, notificationBuilder.build());
+                    getCoodinates();
+                    moveCameraToPosition(getPointCoordinates());
                 }
             });
-
 
             NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
+
         } else {
             setContentView(R.layout.activity_main_v21);
-
-            //addListenerOnButton ();
-            //  act_change = (Button) findViewById(R.id.nav_info);
-            //  act_change.setOnClickListener((View.OnClickListener) this);
-
             tv = findViewById(R.id.nav_tv);
-
-            b1=findViewById(R.id.button_start);
-            notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            b1 = findViewById(R.id.button_start);
             b1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    NotificationCompat.Builder notificationBuilder =
-                            new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                                    .setAutoCancel(false)
-                                    .setSmallIcon(R.drawable.ic_launcher_foreground)
-                                    .setWhen(System.currentTimeMillis())
-                                    .setContentIntent(pendingIntent)
-                                    .setContentTitle("НАЧАТО!")
-                                    .setContentText("Какой то текст .........")
-                                    .setPriority(PRIORITY_HIGH);
-                    createChannelIfNeeded(notificationManager);
-                    notificationManager.notify(NOTIFI_ID, notificationBuilder.build());
-
+                    getCoodinates();
+                    moveCameraToPosition(getPointCoordinates());
                 }
             });
-
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -186,8 +132,11 @@ public class MainActivity extends AppCompatActivity
         mapView = (MapView) findViewById(R.id.mapView);
         userLocationLayer = mapView.getMap().getUserLocationLayer();
         userLocationLayer.setEnabled(true);
-        userLocationLayer.setHeadingEnabled(true);
+        userLocationLayer.setHeadingEnabled(false);
         userLocationLayer.setObjectListener(this);
+        userLocationLayer.setAutoZoomEnabled(true);
+        userLocationLayer.setHeadingEnabled(true);
+
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         engine = new Engine(this);
         mapObjects = mapView.getMap().getMapObjects().addCollection();
@@ -196,9 +145,59 @@ public class MainActivity extends AppCompatActivity
         //TEMP
     }
 
+    public void getCoodinates() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
-    public static void createChannelIfNeeded(NotificationManager manager){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (location != null) {
+            String message = String.format(
+                    "Current Location \n Longitude: %1$s \n Latitude: %2$s",
+                    location.getLongitude(), location.getLatitude()
+            );
+            Toast.makeText(MainActivity.this, message,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public Point getPointCoordinates() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return null;
+        }
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+
+        if (location == null) {
+            return new Point(0, 0);
+        }
+
+        return new Point(location.getLatitude(), location.getLongitude());
+
+    }
+
+    public void moveCameraToPosition(@NonNull Point target) {
+        mapView.getMap().move(
+                new CameraPosition(target, 15.0f, 0.0f, 0.0f),
+                new Animation(Animation.Type.SMOOTH, 2), null);
+    }
+
+
+    public static void createChannelIfNeeded(NotificationManager manager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_ID, NotificationManager.IMPORTANCE_DEFAULT);
             manager.createNotificationChannel(notificationChannel);
 
@@ -436,7 +435,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             if (engine.isUpdatedBuffer) {
-                Log.d("renderBuffer","Render buffer");
+                Log.d("renderBuffer", "Render buffer");
                 engine.isUpdatedBuffer = false;
                 mapObjects.clear();
                 createMapObjects(engine.getBuffer(), Color.RED);
