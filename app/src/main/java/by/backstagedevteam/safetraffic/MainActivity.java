@@ -129,8 +129,7 @@ public class MainActivity extends AppCompatActivity
                                     .setSmallIcon(R.drawable.ic_launcher_foreground)
                                     .setWhen(System.currentTimeMillis())
                                     .setContentIntent(pendingIntent)
-                                    .setContentTitle("НАЧАТО!")
-                                    .setContentText("Какой то текст .........")
+                                    .setContentTitle("Поиск местоположения!")
                                     .setPriority(PRIORITY_HIGH);
                     createChannelIfNeeded(notificationManager);
                     notificationManager.notify(NOTIFI_ID, notificationBuilder.build());
