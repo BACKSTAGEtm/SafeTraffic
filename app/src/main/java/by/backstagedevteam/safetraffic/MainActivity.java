@@ -569,6 +569,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_exit) {
             tv.setText("Нажата кнопка: Выход");
+            System.exit(0);
             finish();
 
 
