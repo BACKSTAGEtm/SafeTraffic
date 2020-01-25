@@ -551,16 +551,6 @@ public class MainActivity extends AppCompatActivity
             Intent intent = new Intent(this, RezimActivity.class);
             startActivity(intent);
 
-        } else if (id == R.id.nav_bd) {
-            tv.setText("Нажата кнопка: Дополнить карту");
-            Intent intent = new Intent(this, BdActivity.class);
-            startActivity(intent);
-
-
-        } else if (id == R.id.nav_share) {
-            tv.setText("Нажата кнопка: Поделиться");
-            Intent intent = new Intent(this, ShareActivity.class);
-            startActivity(intent);
 
         } else if (id == R.id.nav_send) {
             tv.setText("Нажата кнопка: Отправить сообщение");
