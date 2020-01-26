@@ -32,7 +32,7 @@
 
     <Button
         android:id="@+id/button_start"
-        android:layout_width="54dp"
+        android:layout_width="47dp"
         android:layout_height="wrap_content"
         android:background="@android:drawable/ic_menu_mylocation"
         android:onClick="CreateRouting"
